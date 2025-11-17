@@ -10,7 +10,7 @@ packages:
     source: hosted
     version: "91.0.0"
   analysis_server_plugin:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: analysis_server_plugin
       sha256: "26844e7f977087567135d62532b67d5639fe206c5194c3f410ba75e1a04a2747"
@@ -18,7 +18,7 @@ packages:
     source: hosted
     version: "0.3.3"
   analyzer:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: analyzer
       sha256: a40a0cee526a7e1f387c6847bd8a5ccbf510a75952ef8a28338e989558072cb0
@@ -113,6 +113,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  flutter_custom_analyzers:
+    dependency: "direct main"
+    description:
+      path: ".."
+      relative: true
+    source: path
+    version: "1.0.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -218,7 +225,7 @@ packages:
     source: hosted
     version: "2.2.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
@@ -426,4 +433,4 @@ packages:
     source: hosted
     version: "2.2.2"
 sdks:
-  dart: ">=3.10.0 <4.0.0"
+  dart: ">=3.11.0-142.0.dev <4.0.0"
