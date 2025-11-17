@@ -1,14 +1,21 @@
 import 'package:analysis_server_plugin/plugin.dart';
 import 'package:analysis_server_plugin/registry.dart';
+import 'package:flutter_custom_analyzers/add_type_annotation.dart';
+import 'package:flutter_custom_analyzers/always_specify_property_types.dart';
+import 'package:flutter_custom_analyzers/specify_types_on_closure_parameters.dart';
 
-final plugin = SimplePlugin();
+final plugin = FlutterCustomAnalyzer();
 
-class SimplePlugin extends Plugin {
+class FlutterCustomAnalyzer extends Plugin {
   @override
-  String get name => 'Simple Plugin';
+  String get name => 'Flutter custom analyzer';
 
   @override
   void register(PluginRegistry registry) {
-    // Register diagnostics, quick fixes, and assists.
+    registry.registerWarningRule(AlwaysSpecifyPropertyTypesRule());
+    registry.registerFixForRule(AlwaysSpecifyPropertyTypesRule.code, AddTypeAnnotation.new);
+
+    registry.registerWarningRule(SpecifyClosureParameterTypesRule());
+    registry.registerFixForRule(SpecifyClosureParameterTypesRule.code, AddTypeAnnotation.new);
   }
 }
