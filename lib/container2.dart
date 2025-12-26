@@ -163,10 +163,13 @@ class RenderContainer extends RenderComponentBox
   bool get isAntiAlias => _isAntiAlias;
   bool _isAntiAlias;
   set isAntiAlias(bool value) {
-    assert(_color != null);
     if (_isAntiAlias == value) return;
     _isAntiAlias = value;
-    _colorRenderObject!.isAntiAlias = value;
+
+    final color = _colorRenderObject;
+    if (color != null) {
+      color.isAntiAlias = value;
+    }
   }
 
   Decoration? get decoration => _decoration;
@@ -469,20 +472,20 @@ class RenderContainer extends RenderComponentBox
       return child;
     }
 
-    // Otherwise create or update the render object.
+    // Otherwise we need to create or update the render object.
+    // First, let's make sure the child doesn't already have a parent.
+    final childPreviousParent = child?.parent as RenderObjectWithChildMixin?;
+    if (childPreviousParent != renderObject) {
+      childPreviousParent?.child = null;
+    }
+
+    // Now we can create or update the render object.
     if (renderObject == null) {
       renderObject = create();
       _renderObjects[slot] = renderObject;
     } else {
       update(renderObject);
     }
-
-    // Update the child's parent and the render object's child.
-    final childPreviousParent = child?.parent as RenderObjectWithChildMixin?;
-    if (childPreviousParent != null && childPreviousParent != renderObject) {
-      childPreviousParent.child = null;
-    }
-    (renderObject as RenderObjectWithChildMixin).child = child;
 
     return renderObject;
   }

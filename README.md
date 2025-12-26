@@ -1,39 +1,53 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Container state loss
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+## Background
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+The `Container` widget changes the widget tree hierarchy when its arguments
+change. This causes its child to lose its state if it doesn't have a global key.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Example app that shows this issue:
+https://dartpad.dev/?id=bd243d23a7fd661563519c3eebece032
 
-## Features
+Issue: https://github.com/flutter/flutter/issues/161698
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## Solution
 
-## Getting started
+This prototypes a `Container2` widget, which is a drop-in replacement for
+`Container`. Instead of composing widgets, `Container2` creates a single render
+object, `RenderContainer`. This ensures a stable widget tree depth and avoids
+the state loss problem.
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+## Composing render objects
 
-## Usage
+`RenderContainer` composes zero or more render objects based on `Container2`'s
+arguments. `RenderContainer` needs a build phase, similar to the widget tree's
+build phase.
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+This prototype introduces `RenderComponentBox`, a base class for render objects
+that have a build phase to compose children render objects:
 
 ```dart
-const like = 'sample';
+class MyButton extends RenderComponentBox
+    with RenderComponentBoxWithChildMixin<RenderBox> {
+  MyButton({required this.onPressed, RenderBox? child}) {
+    this.child = child;
+  }
+
+  final VoidCallback onPressed;
+  RenderBox? _button;
+
+  @override
+  RenderBox? build() {
+    return _button ??= RenderPointerListener(
+      onPointerDown: (event) => onPressed(),
+      child: RenderDecoratedBox(
+        decoration: BoxDecoration(
+          color: const Color(0xFF0000FF),
+          borderRadius: .circular(4.0),
+        ),
+        child: RenderPadding(padding: const .all(16.0), child: child),
+      ),
+    );
+  }
+}
 ```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
