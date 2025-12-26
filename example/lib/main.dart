@@ -2,38 +2,54 @@ import 'package:container2/container2.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MaterialApp(home: MyPage()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class MyPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  State<MyPage> createState() => _MyPageState();
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class _MyPageState extends State<MyPage> {
+  Color? color;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: const Center(
+      body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: <Widget>[
-            MyContainer(child: MyStateLoser()),
+            Text('Container:'),
+            Container(color: color, child: Counter()),
+
+            SizedBox(height: 20),
+
+            Text('Container2:'),
+            Container2(color: color, child: Counter()),
+
+            SizedBox(height: 20),
+
+            TextButton(
+              onPressed: () => setState(() {
+                color = switch (color) {
+                  null => Colors.red,
+                  _ => null,
+                };
+              }),
+              child: const Text('Toggle color'),
+            ),
+
+            SizedBox(height: 20),
+
             Text(
-              'This example shows how a loss of state can happen when Container changes the widget tree. Press +1 a few times and then toggle the color.',
+              'This example shows how Container can lose state.'
+              '\n'
+              '\n'
+              'Press +1 a few times and then toggle the color.'
+              '\n'
+              '\n'
+              'Notice how Container2 does not lose state.',
             ),
           ],
         ),
@@ -42,59 +58,21 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class MyContainer extends StatefulWidget {
-  const MyContainer({super.key, required this.child});
-
-  final Widget child;
-
+class Counter extends StatefulWidget {
   @override
-  State<MyContainer> createState() => _MyContainerState();
+  State<Counter> createState() => _CounterState();
 }
 
-class _MyContainerState extends State<MyContainer> {
-  Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        TextButton(
-          onPressed: () {
-            setState(() {
-              color = color == null ? Colors.red : null;
-            });
-          },
-          child: const Text('Toggle color'),
-        ),
-        // TRY ME: Switch this to Container.
-        // Container(color: color, width: 100, child: widget.child),
-        Container2(color: color, width: 100, child: widget.child),
-      ],
-    );
-  }
-}
-
-class MyStateLoser extends StatefulWidget {
-  const MyStateLoser({super.key});
-
-  @override
-  State<MyStateLoser> createState() => _MyStateLoserState();
-}
-
-class _MyStateLoserState extends State<MyStateLoser> {
+class _CounterState extends State<Counter> {
   int count = 0;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('You have pressed the button $count times.'),
+        Text('Counter: $count'),
         TextButton(
-          onPressed: () {
-            setState(() {
-              count++;
-            });
-          },
+          onPressed: () => setState(() => count++),
           child: const Text('+1'),
         ),
       ],

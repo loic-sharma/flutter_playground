@@ -34,18 +34,28 @@ class MyButton extends RenderComponentBox
   }
 
   final VoidCallback onPressed;
-  RenderBox? _button;
+
+  RenderBox? _root;
+  RenderObjectWithChildMixin? _childParent;
+
+  @override
+  void didUpdateChild(RenderBox? oldChild) {
+    _childParent?.child = child;
+  }
 
   @override
   RenderBox? build() {
-    return _button ??= RenderPointerListener(
+    return _root ??= RenderPointerListener(
       onPointerDown: (event) => onPressed(),
       child: RenderDecoratedBox(
         decoration: BoxDecoration(
           color: const Color(0xFF0000FF),
           borderRadius: .circular(4.0),
         ),
-        child: RenderPadding(padding: const .all(16.0), child: child),
+        child: _childParent = RenderPadding(
+          padding: const .all(16.0),
+          child: child,
+        ),
       ),
     );
   }

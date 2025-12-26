@@ -309,6 +309,16 @@ class RenderContainer extends RenderComponentBox
       _renderObjects[_RenderContainerSlot.clipBehavior] as RenderClipPath?;
 
   @override
+  void didUpdateChild(RenderBox? oldChild) {
+    // oldChild was either the direct child of this render object (e.g it
+    // was returned by build()), or it was the child of a render object
+    // created by build(). For the former, RenderComponentBox will have
+    // already dropped the child. For the latter, we need to update that
+    // render object to drop oldChild.
+    _unparentRenderObject(oldChild);
+  }
+
+  @override
   RenderBox? build() {
     RenderBox? result = child;
 
@@ -462,32 +472,45 @@ class RenderContainer extends RenderComponentBox
     var renderObject = _renderObjects[slot] as TRenderObject?;
 
     // Destroy the render object if the condition is not met.
+    // Unparent the render object's child as it might be reparented later.
     if (!condition) {
       if (renderObject != null) {
-        final parent = renderObject.parent as RenderObjectWithChildMixin?;
-        parent?.child = null;
+        (renderObject as RenderObjectWithChildMixin).child = null;
         _renderObjects.remove(slot);
       }
 
       return child;
     }
 
-    // Otherwise we need to create or update the render object.
-    // First, let's make sure the child doesn't already have a parent.
-    final childPreviousParent = child?.parent as RenderObjectWithChildMixin?;
-    if (childPreviousParent != renderObject) {
-      childPreviousParent?.child = null;
-    }
-
-    // Now we can create or update the render object.
+    // Create the render object if it doesn't exist.
     if (renderObject == null) {
+      _unparentRenderObject(child);
       renderObject = create();
       _renderObjects[slot] = renderObject;
-    } else {
-      update(renderObject);
+      return renderObject;
     }
 
+    // Otherwise, update the existing render object.
+    if (child?.parent != renderObject) {
+      _unparentRenderObject(child);
+    }
+    update(renderObject);
     return renderObject;
+  }
+
+  void _unparentRenderObject(RenderBox? renderObject) {
+    final parent = renderObject?.parent;
+    if (parent == null) {
+      return;
+    }
+
+    if (parent is RenderObjectWithChildMixin) {
+      parent.child = null;
+      return;
+    }
+
+    assert(parent == this);
+    dropChild(renderObject!);
   }
 }
 

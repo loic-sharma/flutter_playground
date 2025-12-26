@@ -40,9 +40,6 @@ class RenderComponentBoxWithChildElement extends RenderObjectElement {
       (widget as RenderComponentBoxWithChildWidget).child,
       null,
     );
-
-    final renderObject = this.renderObject as RenderComponentBoxWithChildMixin;
-    renderObject.rebuildIfNecessary();
   }
 
   @override
@@ -54,9 +51,6 @@ class RenderComponentBoxWithChildElement extends RenderObjectElement {
       (widget as RenderComponentBoxWithChildWidget).child,
       null,
     );
-
-    final renderObject = this.renderObject as RenderComponentBoxWithChildMixin;
-    renderObject.rebuildIfNecessary();
   }
 
   @override
@@ -102,11 +96,29 @@ abstract class RenderComponentBox extends RenderBox
   @protected
   RenderBox? build();
 
+  /// Whether [build] for this render object is currently running.
+  ///
+  /// Only valid when asserts are enabled. In release builds, always returns
+  /// false.
+  bool get debugDoingThisBuild => _debugDoingThisBuild;
+  bool _debugDoingThisBuild = false;
+
   void rebuildIfNecessary() {
     if (!_needsBuild) return;
+    assert(() {
+      _debugDoingThisBuild = true;
+      return true;
+    }());
     var newComputedChild = build();
+    assert(() {
+      _debugDoingThisBuild = false;
+      return true;
+    }());
     if (newComputedChild != _computedChild) {
-      if (_computedChild != null) {
+      // Drop the child returned by the previous build(),
+      // if we still have it. It's possible this child
+      // was already dropped if it was reparented.
+      if (_computedChild?.parent == this) {
         dropChild(_computedChild!);
       }
       if (newComputedChild != null) {
@@ -238,15 +250,21 @@ mixin RenderComponentBoxWithChildMixin<ChildType extends RenderBox>
   ChildType? get child => _child;
   ChildType? _child;
   set child(ChildType? newChild) {
-    if (_child != newChild) {
-      final oldChild = _child;
+    assert(_debugDoingThisBuild == false);
+    final oldChild = _child;
+    if (oldChild != newChild) {
+      if (oldChild != null && oldChild == _computedChild) {
+        dropChild(oldChild);
+        _computedChild = null;
+      }
+      // New child will be adopted in the next build.
       _child = newChild;
       didUpdateChild(oldChild);
       markNeedsBuild();
     }
   }
 
-  @mustCallSuper
   @protected
-  void didUpdateChild(ChildType? oldChild) {}
+  @mustCallSuper
+  void didUpdateChild(ChildType? oldChild);
 }

@@ -63,6 +63,12 @@ class MyButton extends RenderComponentBox
 
   final VoidCallback onPressed;
   RenderBox? _button;
+  RenderObjectWithChildMixin? _childParent;
+
+  @override
+  void didUpdateChild(RenderBox? oldChild) {
+    _childParent?.child = child;
+  }
 
   @override
   RenderBox? build() {
@@ -73,7 +79,10 @@ class MyButton extends RenderComponentBox
           color: const Color(0xFF0000FF),
           borderRadius: .circular(4.0),
         ),
-        child: RenderPadding(padding: const .all(16.0), child: child),
+        child: _childParent = RenderPadding(
+          padding: const .all(16.0),
+          child: child,
+        ),
       ),
     );
   }
