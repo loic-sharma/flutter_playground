@@ -41,7 +41,13 @@ class MyApp extends RenderComponentBox {
           alignment: .bottomRight,
           child: RenderPadding(
             padding: const .all(16.0),
-            child: MyButton(onPressed: onIncrement),
+            child: MyButton(
+              onPressed: onIncrement,
+              child: RenderParagraph(
+                TextSpan(text: '+ Increment'),
+                textDirection: TextDirection.ltr,
+              ),
+            ),
           ),
         ),
       ],
@@ -49,8 +55,11 @@ class MyApp extends RenderComponentBox {
   }
 }
 
-class MyButton extends RenderComponentBox {
-  MyButton({required this.onPressed});
+class MyButton extends RenderComponentBox
+    with RenderComponentBoxWithChildMixin<RenderBox> {
+  MyButton({required this.onPressed, RenderBox? child}) {
+    this.child = child;
+  }
 
   final VoidCallback onPressed;
   RenderBox? _button;
@@ -59,9 +68,12 @@ class MyButton extends RenderComponentBox {
   RenderBox? build() {
     return _button ??= RenderPointerListener(
       onPointerDown: (event) => onPressed(),
-      child: RenderParagraph(
-        TextSpan(text: '+ Increment'),
-        textDirection: TextDirection.ltr,
+      child: RenderDecoratedBox(
+        decoration: BoxDecoration(
+          color: const Color(0xFF0000FF),
+          borderRadius: .circular(4.0),
+        ),
+        child: RenderPadding(padding: const .all(16.0), child: child),
       ),
     );
   }
