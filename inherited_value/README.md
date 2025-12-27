@@ -12,59 +12,54 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(home: CounterScreen()));
+  runApp(MaterialApp(home: MyScreen()));
 }
 
-class CounterModel extends InheritedWidget {
-  const CounterModel({
-    required this.increment,
+class AppColors extends InheritedWidget {
+  const AppColors({
+    required this.buttonColor,
     required super.child,
   });
 
-  final VoidCallback increment;
+  final Color buttonColor;
 
-  static CounterModel? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<CounterModel>();
+  static AppColors? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppColors>();
   }
 
-  static CounterModel of(BuildContext context) {
-    final CounterModel? model = maybeOf(context);
+  static AppColors of(BuildContext context) {
+    final AppColors? model = maybeOf(context);
     assert(model != null);
     return model!;
   }
 
   @override
-  bool updateShouldNotify(CounterModel oldWidget) {
-    return oldWidget.increment != increment;
+  bool updateShouldNotify(AppColors oldWidget) {
+    return oldWidget.buttonColor != buttonColor;
   }
 }
 
-class CounterScreen extends StatefulWidget {
-  @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int counter = 0;
-
+class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return CounterModel(
-      increment: () => setState(() => counter++),
+    return AppColors(
+      buttonColor: Colors.blue,
       child: Scaffold(
-        body: Center(child: Text('Count: $counter')),
-        floatingActionButton: IncrementButton(),
+        body: Center(child: MyButton()),
       ),
     );
   }
 }
 
-class IncrementButton extends StatelessWidget {
+class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: CounterModel.of(context).increment,
-      child: const Icon(Icons.add),
+    return TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.of(context).buttonColor,
+      ),
+      onPressed: () {},
+      child: const Text('Hello world'),
     );
   }
 }
@@ -78,39 +73,32 @@ class IncrementButton extends StatelessWidget {
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(home: CounterScreen()));
+  runApp(MaterialApp(home: MyScreen()));
 }
 
-class CounterModel({final VoidCallback increment});
+class AppColors({required final Color buttonColor});
 
-class CounterScreen extends StatefulWidget {
-  @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int counter = 0;
-
+class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InheritedValue(
-      create: () => CounterModel(
-        increment: () => setState(() => counter++),
-      ),
+      create: () => AppColors(buttonColor: Colors.blue),
       child: Scaffold(
-        body: Center(child: Text('Count: $counter')),
-        floatingActionButton: IncrementButton(),
+        body: Center(child: MyButton()),
       ),
     );
   }
 }
 
-class IncrementButton extends StatelessWidget {
+class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: InheritedValue<CounterModel>.of(context).increment,
-      child: const Icon(Icons.add),
+    final AppColors colors = InheritedValue<AppColors>.of(context);
+
+    return TextButton(
+      style: TextButton.styleFrom(foregroundColor: colors.buttonColor),
+      onPressed: () {},
+      child: const Text('Hello world'),
     );
   }
 }
@@ -134,61 +122,55 @@ class IncrementButton extends StatelessWidget {
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(home: CounterScreen()));
+  runApp(MaterialApp(home: MyScreen()));
 }
 
-class CounterModel extends InheritedWidget {
-  const CounterModel({
-    required this.counter,
+class AppColors extends InheritedWidget {
+  const AppColors({
+    required this.buttonColor,
     required super.child,
   });
 
-  final int counter;
+  final Color buttonColor;
 
-  static CounterModel? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<CounterModel>();
+  static AppColors? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppColors>();
   }
 
-  static CounterModel of(BuildContext context) {
-    final CounterModel? model = maybeOf(context);
+  static AppColors of(BuildContext context) {
+    final AppColors? model = maybeOf(context);
     assert(model != null);
     return model!;
   }
 
   @override
-  bool updateShouldNotify(CounterModel oldWidget) {
-    return oldWidget.counter != counter;
+  bool updateShouldNotify(AppColors oldWidget) {
+    return oldWidget.buttonColor != buttonColor;
   }
 }
 
-class CounterScreen extends StatefulWidget {
-  @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int counter = 0;
-
+class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CounterModel(
-        counter: counter,
-        child: DisplayCounter(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => setState(() => counter++),
-        child: const Icon(Icons.add),
+    return AppColors(
+      buttonColor: Colors.blue,
+      child: Scaffold(
+        body: Center(child: MyButton()),
       ),
     );
   }
 }
 
-class DisplayCounter extends StatelessWidget {
+class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final CounterModel model = CounterModel.of(context);
-    return Center(child: Text('Count: ${model.counter}'));
+    return TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.of(context).buttonColor,
+      ),
+      onPressed: () {},
+      child: const Text('Hello world'),
+    );
   }
 }
 ```
@@ -201,42 +183,36 @@ class DisplayCounter extends StatelessWidget {
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(home: CounterScreen()));
+  runApp(MaterialApp(home: MyScreen()));
 }
 
-class CounterModel({final int counter});
+class AppColors({required final Color buttonColor});
 
-class CounterScreen extends StatefulWidget {
-  @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int counter = 0;
-
+class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: InheritedValue.value(
-        value: CounterModel(counter: counter),
-        updateShouldNotify: (oldValue, newValue) {
-          return oldValue.counter != newValue.counter;
-        },
-        child: DisplayCounter(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => setState(() => counter++),
-        child: const Icon(Icons.add),
+    return InheritedValue.value(
+      value: AppColors(buttonColor: Colors.blue),
+      updateShouldNotify: (oldValue, newValue) {
+        return oldValue.buttonColor != newValue.buttonColor;
+      },
+      child: Scaffold(
+        body: Center(child: MyButton()),
       ),
     );
   }
 }
 
-class DisplayCounter extends StatelessWidget {
+class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final CounterModel model = InheritedValue<CounterModel>.of(context);
-    return Center(child: Text('Count: ${model.counter}'));
+    final AppColors colors = InheritedValue<AppColors>.of(context);
+
+    return TextButton(
+      style: TextButton.styleFrom(foregroundColor: colors.buttonColor),
+      onPressed: () {},
+      child: const Text('Hello world'),
+    );
   }
 }
 ```
@@ -254,7 +230,7 @@ void main() {
   runApp(MaterialApp(home: CounterScreen()));
 }
 
-class ColorModel({final Color buttonColor});
+class AppColors({final Color buttonColor});
 class CounterModel({final VoidCallback increment});
 
 class CounterScreen extends StatefulWidget {
@@ -269,7 +245,7 @@ class _CounterScreenState extends State<CounterScreen> {
   Widget build(BuildContext context) {
     return InheritedValue.multiple(
       create: () => [
-        ColorModel(buttonColor: Colors.blue),
+        AppColors(buttonColor: Colors.blue),
         CounterModel(increment: () => setState(() => counter++)),
       ],
       child: Scaffold(
@@ -283,12 +259,12 @@ class _CounterScreenState extends State<CounterScreen> {
 class IncrementButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final buttonColor = InheritedValue<ColorModel>.of(context).buttonColor;
-    final onPressed = InheritedValue<CounterModel>.of(context).increment;
+    final colors = InheritedValue<AppColors>.of(context);
+    final counter = InheritedValue<CounterModel>.of(context);
  
     return FloatingActionButton(
-      backgroundColor: buttonColor,
-      onPressed: onPressed,
+      foregroundColor: colors.buttonColor,
+      onPressed: counter.increment,
       child: const Icon(Icons.add),
     );
   }
