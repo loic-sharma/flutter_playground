@@ -17,135 +17,6 @@ void main() {
 
 class CounterModel extends InheritedWidget {
   const CounterModel({
-    required this.counter,
-    required super.child,
-  });
-
-  final int counter;
-
-  static CounterModel? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<CounterModel>();
-  }
-
-  static CounterModel of(BuildContext context) {
-    final CounterModel? model = maybeOf(context);
-    assert(model != null);
-    return model!;
-  }
-
-  @override
-  bool updateShouldNotify(CounterModel oldWidget) {
-    return oldWidget.counter != counter;
-  }
-}
-
-class CounterScreen extends StatefulWidget {
-  @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int counter = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: CounterModel(
-        counter: counter,
-        child: Center(
-          child: DisplayCounter(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => setState(() => counter++),
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class DisplayCounter extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final CounterModel model = CounterModel.of(context);
-    return Text('Count: ${model.counter}');
-  }
-}
-```
-
-
-</td>
-<td>
-
-```dart
-import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MaterialApp(home: CounterScreen()));
-}
-
-class CounterModel({final int counter});
-
-class CounterScreen extends StatefulWidget {
-  @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int counter = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: InheritedValue(
-        value: CounterModel(counter: counter),
-        updateShouldNotify: (oldValue, newValue) {
-          return oldValue.counter != newValue.counter;
-        },
-        child: Center(
-          child: DisplayCounter(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => setState(() => counter++),
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class DisplayCounter extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final CounterModel model = InheritedValue<CounterModel>.of(context);
-    return Text('Count: ${model.counter}');
-  }
-}
-```
-
-</td>
-</tr>
-</table>
-  
-# InheritedValue.single
-
-<table>
-<tr>
-  <td>Before</td>
-  <td>After</td>
-</tr>
-<tr>
-<td>
-
-```dart
-import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MaterialApp(home: CounterScreen()));
-}
-
-class CounterModel extends InheritedWidget {
-  const CounterModel({
     required this.increment,
     required super.child,
   });
@@ -181,9 +52,7 @@ class _CounterScreenState extends State<CounterScreen> {
     return CounterModel(
       increment: () => setState(() => counter++),
       child: Scaffold(
-        body: Center(
-          child: Text('Count: $counter'),
-        ),
+        body: Center(child: Text('Count: $counter')),
         floatingActionButton: IncrementButton(),
       ),
     );
@@ -224,14 +93,12 @@ class _CounterScreenState extends State<CounterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return InheritedValue.single(
+    return InheritedValue(
       create: () => CounterModel(
         increment: () => setState(() => counter++),
       ),
       child: Scaffold(
-        body: Center(
-          child: Text('Count: $counter'),
-        ),
+        body: Center(child: Text('Count: $counter')),
         floatingActionButton: IncrementButton(),
       ),
     );
@@ -245,6 +112,131 @@ class IncrementButton extends StatelessWidget {
       onPressed: InheritedValue<CounterModel>.of(context).increment,
       child: const Icon(Icons.add),
     );
+  }
+}
+```
+
+</td>
+</tr>
+</table>
+
+# InheritedValue.value
+
+<table>
+<tr>
+  <td>Before</td>
+  <td>After</td>
+</tr>
+<tr>
+<td>
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(home: CounterScreen()));
+}
+
+class CounterModel extends InheritedWidget {
+  const CounterModel({
+    required this.counter,
+    required super.child,
+  });
+
+  final int counter;
+
+  static CounterModel? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<CounterModel>();
+  }
+
+  static CounterModel of(BuildContext context) {
+    final CounterModel? model = maybeOf(context);
+    assert(model != null);
+    return model!;
+  }
+
+  @override
+  bool updateShouldNotify(CounterModel oldWidget) {
+    return oldWidget.counter != counter;
+  }
+}
+
+class CounterScreen extends StatefulWidget {
+  @override
+  State<CounterScreen> createState() => _CounterScreenState();
+}
+
+class _CounterScreenState extends State<CounterScreen> {
+  int counter = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CounterModel(
+        counter: counter,
+        child: DisplayCounter(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => setState(() => counter++),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class DisplayCounter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final CounterModel model = CounterModel.of(context);
+    return Center(child: Text('Count: ${model.counter}'));
+  }
+}
+```
+
+
+</td>
+<td>
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(home: CounterScreen()));
+}
+
+class CounterModel({final int counter});
+
+class CounterScreen extends StatefulWidget {
+  @override
+  State<CounterScreen> createState() => _CounterScreenState();
+}
+
+class _CounterScreenState extends State<CounterScreen> {
+  int counter = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: InheritedValue.value(
+        value: CounterModel(counter: counter),
+        updateShouldNotify: (oldValue, newValue) {
+          return oldValue.counter != newValue.counter;
+        },
+        child: DisplayCounter(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => setState(() => counter++),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class DisplayCounter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final CounterModel model = InheritedValue<CounterModel>.of(context);
+    return Center(child: Text('Count: ${model.counter}'));
   }
 }
 ```
@@ -281,9 +273,7 @@ class _CounterScreenState extends State<CounterScreen> {
         CounterModel(increment: () => setState(() => counter++)),
       ],
       child: Scaffold(
-        body: Center(
-          child: Text('Count: $counter'),
-        ),
+        body: Center(child: Text('Count: $counter')),
         floatingActionButton: IncrementButton(),
       ),
     );
