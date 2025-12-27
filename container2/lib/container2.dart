@@ -1,9 +1,9 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-import 'component_box.dart';
+import 'package:render_box_builder/render_box_builder.dart';
 
-class Container2 extends RenderComponentBoxWithChildWidget {
+class Container2 extends RenderBoxBuilderWithChildWidget {
   Container2({
     super.key,
     this.alignment,
@@ -90,8 +90,8 @@ class Container2 extends RenderComponentBoxWithChildWidget {
   }
 }
 
-class RenderContainer extends RenderComponentBox
-    with RenderComponentBoxWithChildMixin<RenderBox> {
+class RenderContainer extends RenderBoxBuilder
+    with RenderBoxBuilderWithChildMixin<RenderBox> {
   RenderContainer({
     required AlignmentGeometry? alignment,
     required EdgeInsetsGeometry? padding,
@@ -319,11 +319,11 @@ class RenderContainer extends RenderComponentBox
   }
 
   @override
-  RenderBox? build() {
+  RenderBox build() {
     RenderBox? result = child;
 
     var canAlign = true;
-    if (result == null &&
+    if (child == null &&
         (_additionalConstraints == null || !_additionalConstraints!.isTight)) {
       canAlign = false;
       result = RenderLimitedBox(
@@ -459,7 +459,7 @@ class RenderContainer extends RenderComponentBox
       child: result,
     );
 
-    return result;
+    return result!;
   }
 
   RenderBox? _buildRenderObject<TRenderObject extends RenderBox>({

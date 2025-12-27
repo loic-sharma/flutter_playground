@@ -1,19 +1,19 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-abstract class RenderComponentBoxWithChildWidget extends RenderObjectWidget {
-  const RenderComponentBoxWithChildWidget({super.key, this.child});
+abstract class RenderBoxBuilderWithChildWidget extends RenderObjectWidget {
+  const RenderBoxBuilderWithChildWidget({super.key, this.child});
 
   final Widget? child;
 
   @override
-  RenderComponentBoxWithChildElement createElement() =>
-      RenderComponentBoxWithChildElement(this);
+  RenderBoxBuilderWithChildElement createElement() =>
+      RenderBoxBuilderWithChildElement(this);
 }
 
-class RenderComponentBoxWithChildElement extends RenderObjectElement {
-  RenderComponentBoxWithChildElement(
-    RenderComponentBoxWithChildWidget super.widget,
+class RenderBoxBuilderWithChildElement extends RenderObjectElement {
+  RenderBoxBuilderWithChildElement(
+    RenderBoxBuilderWithChildWidget super.widget,
   );
 
   Element? _child;
@@ -37,27 +37,26 @@ class RenderComponentBoxWithChildElement extends RenderObjectElement {
     super.mount(parent, newSlot);
     _child = updateChild(
       _child,
-      (widget as RenderComponentBoxWithChildWidget).child,
+      (widget as RenderBoxBuilderWithChildWidget).child,
       null,
     );
   }
 
   @override
-  void update(RenderComponentBoxWithChildWidget newWidget) {
+  void update(RenderBoxBuilderWithChildWidget newWidget) {
     super.update(newWidget);
     assert(widget == newWidget);
     _child = updateChild(
       _child,
-      (widget as RenderComponentBoxWithChildWidget).child,
+      (widget as RenderBoxBuilderWithChildWidget).child,
       null,
     );
   }
 
   @override
   void insertRenderObjectChild(RenderObject child, Object? slot) {
-    final renderObject = this.renderObject as RenderComponentBoxWithChildMixin;
+    final renderObject = this.renderObject as RenderBoxBuilderWithChildMixin<RenderBox>;
     assert(slot == null);
-    // TODO: Should this accept any RenderObject child?
     renderObject.child = child as RenderBox;
     assert(renderObject == this.renderObject);
   }
@@ -73,7 +72,7 @@ class RenderComponentBoxWithChildElement extends RenderObjectElement {
 
   @override
   void removeRenderObjectChild(RenderObject child, Object? slot) {
-    final renderObject = this.renderObject as RenderComponentBoxWithChildMixin;
+    final renderObject = this.renderObject as RenderBoxBuilderWithChildMixin<RenderBox>;
     assert(slot == null);
     assert(renderObject.child == child);
     renderObject.child = null;
@@ -81,7 +80,7 @@ class RenderComponentBoxWithChildElement extends RenderObjectElement {
   }
 }
 
-abstract class RenderComponentBox extends RenderBox
+abstract class RenderBoxBuilder extends RenderBox
     with RenderObjectWithLayoutCallbackMixin {
   RenderBox? _computedChild;
 
@@ -94,7 +93,7 @@ abstract class RenderComponentBox extends RenderBox
   }
 
   @protected
-  RenderBox? build();
+  RenderBox build();
 
   /// Whether [build] for this render object is currently running.
   ///
@@ -121,9 +120,7 @@ abstract class RenderComponentBox extends RenderBox
       if (_computedChild?.parent == this) {
         dropChild(_computedChild!);
       }
-      if (newComputedChild != null) {
-        adoptChild(newComputedChild);
-      }
+      adoptChild(newComputedChild);
       _computedChild = newComputedChild;
     }
     _needsBuild = false;
@@ -245,8 +242,8 @@ abstract class RenderComponentBox extends RenderBox
   }
 }
 
-mixin RenderComponentBoxWithChildMixin<ChildType extends RenderBox>
-    on RenderComponentBox {
+mixin RenderBoxBuilderWithChildMixin<ChildType extends RenderBox>
+    on RenderBoxBuilder {
   ChildType? get child => _child;
   ChildType? _child;
   set child(ChildType? newChild) {

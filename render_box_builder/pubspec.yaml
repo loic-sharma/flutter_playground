@@ -1,4 +1,4 @@
-name: container2
+name: render_box_builder
 
 environment:
   sdk: ^3.11.0-142.0.dev
@@ -7,8 +7,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  render_box_builder:
-    path: ../render_box_builder
 
 dev_dependencies:
   flutter_test:

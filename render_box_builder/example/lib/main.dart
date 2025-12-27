@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This example shows how to show the text 'Hello, world.' using the underlying
-// render tree.
-
 import 'dart:ui';
 
-import 'package:container2/component_box.dart';
+import 'package:render_box_builder/render_box_builder.dart';
 import 'package:flutter/rendering.dart';
 
 void main() {
   runRenderApp(MyApp());
 }
 
-class MyApp extends RenderComponentBox {
+class MyApp extends RenderBoxBuilder {
   int _counter = 0;
 
   RenderBox? _app;
@@ -26,7 +23,7 @@ class MyApp extends RenderComponentBox {
   }
 
   @override
-  RenderBox? build() {
+  RenderBox build() {
     return _app ??= RenderStack(
       textDirection: TextDirection.ltr,
       children: [
@@ -55,8 +52,8 @@ class MyApp extends RenderComponentBox {
   }
 }
 
-class MyButton extends RenderComponentBox
-    with RenderComponentBoxWithChildMixin<RenderBox> {
+class MyButton extends RenderBoxBuilder
+    with RenderBoxBuilderWithChildMixin<RenderBox> {
   MyButton({required this.onPressed, RenderBox? child}) {
     this.child = child;
   }
@@ -71,7 +68,7 @@ class MyButton extends RenderComponentBox
   }
 
   @override
-  RenderBox? build() {
+  RenderBox build() {
     return _button ??= RenderPointerListener(
       onPointerDown: (event) => onPressed(),
       child: RenderDecoratedBox(
