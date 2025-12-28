@@ -43,7 +43,7 @@ class InheritedValue<T> extends StatefulWidget {
 }
 
 class _InheritedValueState<T> extends State<InheritedValue<T>> {
-  T? value;
+  late T value;
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _InheritedValueState<T> extends State<InheritedValue<T>> {
   void didUpdateWidget(covariant InheritedValue<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.value != null) {
-      value = widget.value;
+      value = widget.value!;
     }
   }
 
