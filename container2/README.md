@@ -7,8 +7,75 @@ Changing `Container`'s arguments can change the widget tree hiarchy,
 which can cause state loss if the child doesn't have a global key.
 See: https://github.com/flutter/flutter/issues/161698.
 
-Example app that shows the `Container` state loss issue:
+<details>
+<summary>Example that shows the `Container` state loss problem...</summary>
+
+Dartpad:
 https://dartpad.dev/?id=bd243d23a7fd661563519c3eebece032
+
+
+```dart
+class MyPage extends StatefulWidget {
+  @override
+  State<MyPage> createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: .center,
+          children: <Widget>[
+            // BAD! Container.color changes from .red to null. This 
+            // changes the widget tree's hierarchy by adding or removing
+            // a _ColoredBox widget. Counter's state will be lost since
+            // it doesn't accept a global key. 
+            Container(
+              color: color,
+              child: Counter(),
+            ),
+
+            TextButton(
+              onPressed: () => setState(() {
+                color = color == null ? Colors.red : null;
+              }),
+              child: const Text('Toggle color'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Counter extends StatefulWidget {
+  @override
+  State<Counter> createState() => _CounterState();
+}
+
+class _CounterState extends State<Counter> {
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text('Counter: $count'),
+        TextButton(
+          onPressed: () => setState(() => count++),
+          child: const Text('Increment'),
+        ),
+      ],
+    );
+  }
+}
+```
+
+</details>
 
 ## Solution
 
