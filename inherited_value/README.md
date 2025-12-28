@@ -93,7 +93,7 @@ class MyScreen extends StatelessWidget {
 class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AppColors colors = InheritedValue<AppColors>.of(context);
+    final AppColors colors = InheritedValue.of<AppColors>(context);
 
     return TextButton(
       style: TextButton.styleFrom(foregroundColor: colors.buttonColor),
@@ -206,7 +206,7 @@ class MyScreen extends StatelessWidget {
 class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AppColors colors = InheritedValue<AppColors>.of(context);
+    final AppColors colors = InheritedValue.of<AppColors>(context);
 
     return TextButton(
       style: TextButton.styleFrom(foregroundColor: colors.buttonColor),
@@ -221,7 +221,7 @@ class MyButton extends StatelessWidget {
 </tr>
 </table>
   
-# InheritedValue.multiple
+# InheritedValues
 
 ```dart
 import 'package:flutter/material.dart';
@@ -243,11 +243,11 @@ class _CounterScreenState extends State<CounterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return InheritedValue.multiple(
-      create: () => [
-        AppColors(buttonColor: Colors.blue),
-        CounterModel(increment: () => setState(() => counter++)),
-      ],
+    return InheritedValues(
+      create: (values) {
+        values.add(AppColors(buttonColor: Colors.blue));
+        values.add(CounterModel(increment: () => setState(() => counter++)));
+      },
       child: Scaffold(
         body: Center(child: Text('Count: $counter')),
         floatingActionButton: IncrementButton(),
@@ -259,8 +259,8 @@ class _CounterScreenState extends State<CounterScreen> {
 class IncrementButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = InheritedValue<AppColors>.of(context);
-    final counter = InheritedValue<CounterModel>.of(context);
+    final colors = InheritedValue.of<AppColors>(context);
+    final counter = InheritedValue.of<CounterModel>(context);
  
     return FloatingActionButton(
       foregroundColor: colors.buttonColor,
