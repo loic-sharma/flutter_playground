@@ -1,39 +1,56 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# `RenderBoxBuilder`
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+`RenderBoxBuilder` is a base class for render objects
+that have a build phase to compose render objects dynamically:
 
 ```dart
-const like = 'sample';
+class RenderHello extends RenderBoxBuilder {
+  RenderBox? _root;
+
+  @override
+  RenderBox build() {
+    return _root ??= RenderParagraph(
+      TextSpan(text: 'Hello world'),
+      textDirection: .ltr,
+    );
+  }
+}
 ```
 
-## Additional information
+The `RenderBoxBuilder` can use the `RenderBoxBuilderWithChildMixin` mixin
+to accept a child and wrap it with zero or more render objects:
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```dart
+class MyButton extends RenderBoxBuilder
+    with RenderBoxBuilderWithChildMixin<RenderBox> {
+  MyButton({required this.onPressed, RenderBox? child}) {
+    this.child = child;
+  }
+
+  final VoidCallback onPressed;
+  RenderBox? _button;
+  RenderObjectWithChildMixin? _childParent;
+
+  @override
+  void didUpdateChild(RenderBox? oldChild) {
+    _childParent?.child = child;
+  }
+
+  @override
+  RenderBox build() {
+    return _button ??= RenderPointerListener(
+      onPointerDown: (event) => onPressed(),
+      child: RenderDecoratedBox(
+        decoration: BoxDecoration(
+          color: const Color(0xFF0000FF),
+          borderRadius: .circular(4.0),
+        ),
+        child: _childParent = RenderPadding(
+          padding: const .all(16.0),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+```
