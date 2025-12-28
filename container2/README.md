@@ -2,13 +2,13 @@
 
 ## Background
 
-The `Container` widget changes the widget tree hierarchy when its arguments
-change. This causes its child to lose its state if it doesn't have a global key.
+`Container` compose widgets together depending on its arguments.
+Changing `Container`'s arguments can change the widget tree hiarchy,
+which can cause state loss if the child doesn't have a global key.
+See: https://github.com/flutter/flutter/issues/161698.
 
-Example app that shows this issue:
+Example app that shows the `Container` state loss issue:
 https://dartpad.dev/?id=bd243d23a7fd661563519c3eebece032
-
-Issue: https://github.com/flutter/flutter/issues/161698
 
 ## Solution
 
