@@ -18,4 +18,4 @@ object, `RenderContainer`. This ensures a stable widget tree depth and avoids
 the state loss problem.
 
 `RenderContainer` composes zero or more render objects based on `Container2`'s
-arguments. It does so by exteniding [`RenderBoxBuilder`](../render_box_builder/).
+arguments. It does so by extending [`RenderBoxBuilder`](../render_box_builder/).
