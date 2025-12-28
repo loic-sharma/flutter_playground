@@ -25,7 +25,7 @@ class MyApp extends RenderBoxBuilder {
   @override
   RenderBox build() {
     return _app ??= RenderStack(
-      textDirection: TextDirection.ltr,
+      textDirection: .ltr,
       children: [
         RenderPositionedBox(
           alignment: .center,

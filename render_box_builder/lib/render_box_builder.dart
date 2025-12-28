@@ -55,7 +55,8 @@ class RenderBoxBuilderWithChildElement extends RenderObjectElement {
 
   @override
   void insertRenderObjectChild(RenderObject child, Object? slot) {
-    final renderObject = this.renderObject as RenderBoxBuilderWithChildMixin<RenderBox>;
+    final renderObject =
+        this.renderObject as RenderBoxBuilderWithChildMixin<RenderBox>;
     assert(slot == null);
     renderObject.child = child as RenderBox;
     assert(renderObject == this.renderObject);
@@ -72,7 +73,8 @@ class RenderBoxBuilderWithChildElement extends RenderObjectElement {
 
   @override
   void removeRenderObjectChild(RenderObject child, Object? slot) {
-    final renderObject = this.renderObject as RenderBoxBuilderWithChildMixin<RenderBox>;
+    final renderObject =
+        this.renderObject as RenderBoxBuilderWithChildMixin<RenderBox>;
     assert(slot == null);
     assert(renderObject.child == child);
     renderObject.child = null;
