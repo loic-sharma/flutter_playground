@@ -62,7 +62,7 @@ class _InheritedValueState<T> extends State<InheritedValue<T>> {
   @override
   Widget build(BuildContext context) {
     return _RawInheritedValue<T>(
-      value: value!,
+      value: value,
       updateShouldNotify: widget.updateShouldNotify ?? _defaultUpdateShouldNotify,
       child: widget.child,
     );
