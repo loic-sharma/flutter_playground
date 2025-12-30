@@ -76,26 +76,7 @@ class RenderHello extends RenderProxyBox {
     );
   }
 }
-```
 
-However, things get trick if your render object wants to
-accept a child render object and then wrap it with one or
-more render objects:
-
-1. Naming the child `child` would conflict with `RenderProxyBox.child`.
-   To workaround this, you can call the child `delegatedChild`.
-2. You cannot use `SingleChildRenderObjectWidget` as
-   `SingleChildRenderObjectElement.insertRenderObjectChild` will set
-   `RenderProxyBox.child`, when instead you want it to set `delegatedChild`.
-   To workaround this, you need to create a custom element whose
-   `insertRenderObjectChild` implementation sets `delegatedChild`.
-
-First you create your `RenderProxyBox` with a `delegatedChild` property:
-
-<details>
-<summary>RenderProxyBox with a delegatedChild property...</summary>
-
-```dart
 class RenderPaddingWrapper extends RenderProxyBox {
   RenderPaddingWrapper({
     RenderBox? delegatedChild,
@@ -115,11 +96,17 @@ class RenderPaddingWrapper extends RenderProxyBox {
 }
 ```
 
-</details>
+However, this approach has problems:
 
-Next, create a custom `RenderObjectWidget` and `RenderObjectElement`
-with a `insertRenderObjectChild` implementation that sets
-`RenderPaddingWrapper.delegatedChild`:
+1. `RenderProxyBox.child` is public. Anyone can update this property,
+   which could break your render object's logic.
+
+2. `RenderPaddingWrapper` accepts a `delegatedChild` render object
+   and wraps it additional render objects. You have to create a
+   custom element to use this render object in the widget tree.
+   Using the normal `SingleChildRenderObjectWidget` would set
+   `child` instead of `delegatedChild`.  This requires large
+   amounts of boilerplate:
 
 <details>
 <summary>Custom element that sets delegatedChild...</summary>
