@@ -1,14 +1,12 @@
-name: container2
-
+name: example
+publish_to: "none"
 environment:
   sdk: ^3.11.0-142.0.dev
-  flutter: ">=1.17.0"
-
 dependencies:
   flutter:
     sdk: flutter
   render_computed_box:
-    path: ../render_computed_box
+    path: ../
 
 dev_dependencies:
   flutter_test:

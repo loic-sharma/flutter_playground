@@ -1,7 +1,8 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:render_computed_box/render_computed_box.dart';
 
-class Container2 extends RenderObjectWidget {
+class Container2 extends RenderComputedBoxWithChildWidget {
   Container2({
     super.key,
     this.alignment,
@@ -16,8 +17,8 @@ class Container2 extends RenderObjectWidget {
     this.margin,
     this.transform,
     this.transformAlignment,
-    this.child,
     this.clipBehavior = Clip.none,
+    super.child,
   }) : assert(margin == null || margin.isNonNegative),
        assert(padding == null || padding.isNonNegative),
        assert(decoration == null || decoration.debugAssertIsValid()),
@@ -44,7 +45,6 @@ class Container2 extends RenderObjectWidget {
   final Matrix4? transform;
   final AlignmentGeometry? transformAlignment;
   final Clip clipBehavior;
-  final Widget? child;
 
   EdgeInsetsGeometry? get _paddingIncludingDecoration {
     return switch ((padding, decoration?.padding)) {
@@ -53,9 +53,6 @@ class Container2 extends RenderObjectWidget {
       (_) => padding!.add(decoration!.padding),
     };
   }
-
-  @override
-  RenderObjectElement createElement() => _Container2Element(this);
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -92,74 +89,8 @@ class Container2 extends RenderObjectWidget {
   }
 }
 
-class _Container2Element extends RenderObjectElement {
-  _Container2Element(Container2 super.widget);
-
-  Element? _child;
-
-  @override
-  void visitChildren(ElementVisitor visitor) {
-    if (_child != null) {
-      visitor(_child!);
-    }
-  }
-
-  @override
-  void forgetChild(Element child) {
-    assert(child == _child);
-    _child = null;
-    super.forgetChild(child);
-  }
-
-  @override
-  void mount(Element? parent, Object? newSlot) {
-    super.mount(parent, newSlot);
-    _child = updateChild(
-      _child,
-      (widget as Container2).child,
-      null,
-    );
-  }
-
-  @override
-  void update(Container2 newWidget) {
-    super.update(newWidget);
-    assert(widget == newWidget);
-    _child = updateChild(
-      _child,
-      (widget as Container2).child,
-      null,
-    );
-  }
-
-  @override
-  void insertRenderObjectChild(RenderObject child, Object? slot) {
-    final renderContainer = renderObject as RenderContainer;
-    assert(slot == null);
-    renderContainer.delegatedChild = child as RenderBox;
-    assert(renderContainer == renderObject);
-  }
-
-  @override
-  void moveRenderObjectChild(
-    RenderObject child,
-    Object? oldSlot,
-    Object? newSlot,
-  ) {
-    assert(false);
-  }
-
-  @override
-  void removeRenderObjectChild(RenderObject child, Object? slot) {
-    final renderContainer = renderObject as RenderContainer;
-    assert(slot == null);
-    assert(renderContainer.delegatedChild == child);
-    renderContainer.delegatedChild = null;
-    assert(renderContainer == renderObject);
-  }
-}
-
-class RenderContainer extends RenderProxyBox {
+class RenderContainer extends RenderComputedBox
+    with RenderComputedBoxWithDelegatedChildMixin<RenderBox> {
   RenderContainer({
     required AlignmentGeometry? alignment,
     required EdgeInsetsGeometry? padding,
@@ -354,8 +285,12 @@ class RenderContainer extends RenderProxyBox {
     _textDirection = value;
   }
 
+  @override
   RenderBox? get delegatedChild => _delegatedChild;
+
   RenderBox? _delegatedChild;
+
+  @override
   set delegatedChild(RenderBox? value) {
     if (_delegatedChild == value) return;
     _delegatedChild = value;
@@ -525,7 +460,7 @@ class RenderContainer extends RenderProxyBox {
       child: result,
     );
 
-    child = result;
+    computedChild = result;
   }
 
   RenderBox? _buildRenderObject<TRenderObject extends RenderBox>({
@@ -576,7 +511,7 @@ class RenderContainer extends RenderProxyBox {
     }
 
     assert(parent == this);
-    dropChild(renderObject!);
+    computedChild = null;
   }
 }
 

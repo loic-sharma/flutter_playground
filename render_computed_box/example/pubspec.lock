@@ -134,7 +134,7 @@ packages:
   render_computed_box:
     dependency: "direct main"
     description:
-      path: "../render_computed_box"
+      path: ".."
       relative: true
     source: path
     version: "0.0.0"

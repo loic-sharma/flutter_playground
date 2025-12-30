@@ -138,6 +138,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  render_computed_box:
+    dependency: transitive
+    description:
+      path: "../../render_computed_box"
+      relative: true
+    source: path
+    version: "0.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
