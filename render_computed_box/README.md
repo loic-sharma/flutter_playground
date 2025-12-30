@@ -64,7 +64,7 @@ class PaddingWrapper extends RenderComputedBoxWithChildWidget {
 
 ## Why is this necessary?
 
-It's already possible today to compose render object using
+It's already possible today to compose render objects using
 `RenderProxyBox`:
 
 ```dart
