@@ -1,0 +1,16 @@
+name: render_box_builder
+
+environment:
+  sdk: ^3.11.0-142.0.dev
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  render_box_builder:
+    path: ../render_box_builder
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
