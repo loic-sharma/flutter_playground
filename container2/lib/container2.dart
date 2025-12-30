@@ -1,9 +1,7 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:render_box_builder/render_box_builder.dart';
-
-class Container2 extends RenderBoxBuilderWithChildWidget {
+class Container2 extends RenderObjectWidget {
   Container2({
     super.key,
     this.alignment,
@@ -18,7 +16,7 @@ class Container2 extends RenderBoxBuilderWithChildWidget {
     this.margin,
     this.transform,
     this.transformAlignment,
-    super.child,
+    this.child,
     this.clipBehavior = Clip.none,
   }) : assert(margin == null || margin.isNonNegative),
        assert(padding == null || padding.isNonNegative),
@@ -46,6 +44,7 @@ class Container2 extends RenderBoxBuilderWithChildWidget {
   final Matrix4? transform;
   final AlignmentGeometry? transformAlignment;
   final Clip clipBehavior;
+  final Widget? child;
 
   EdgeInsetsGeometry? get _paddingIncludingDecoration {
     return switch ((padding, decoration?.padding)) {
@@ -54,6 +53,9 @@ class Container2 extends RenderBoxBuilderWithChildWidget {
       (_) => padding!.add(decoration!.padding),
     };
   }
+
+  @override
+  RenderObjectElement createElement() => _Container2Element(this);
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -90,8 +92,74 @@ class Container2 extends RenderBoxBuilderWithChildWidget {
   }
 }
 
-class RenderContainer extends RenderBoxBuilder
-    with RenderBoxBuilderWithChildMixin<RenderBox> {
+class _Container2Element extends RenderObjectElement {
+  _Container2Element(Container2 super.widget);
+
+  Element? _child;
+
+  @override
+  void visitChildren(ElementVisitor visitor) {
+    if (_child != null) {
+      visitor(_child!);
+    }
+  }
+
+  @override
+  void forgetChild(Element child) {
+    assert(child == _child);
+    _child = null;
+    super.forgetChild(child);
+  }
+
+  @override
+  void mount(Element? parent, Object? newSlot) {
+    super.mount(parent, newSlot);
+    _child = updateChild(
+      _child,
+      (widget as Container2).child,
+      null,
+    );
+  }
+
+  @override
+  void update(Container2 newWidget) {
+    super.update(newWidget);
+    assert(widget == newWidget);
+    _child = updateChild(
+      _child,
+      (widget as Container2).child,
+      null,
+    );
+  }
+
+  @override
+  void insertRenderObjectChild(RenderObject child, Object? slot) {
+    final renderContainer = renderObject as RenderContainer;
+    assert(slot == null);
+    renderContainer.delegatedChild = child as RenderBox;
+    assert(renderContainer == renderObject);
+  }
+
+  @override
+  void moveRenderObjectChild(
+    RenderObject child,
+    Object? oldSlot,
+    Object? newSlot,
+  ) {
+    assert(false);
+  }
+
+  @override
+  void removeRenderObjectChild(RenderObject child, Object? slot) {
+    final renderContainer = renderObject as RenderContainer;
+    assert(slot == null);
+    assert(renderContainer.delegatedChild == child);
+    renderContainer.delegatedChild = null;
+    assert(renderContainer == renderObject);
+  }
+}
+
+class RenderContainer extends RenderProxyBox {
   RenderContainer({
     required AlignmentGeometry? alignment,
     required EdgeInsetsGeometry? padding,
@@ -105,7 +173,7 @@ class RenderContainer extends RenderBoxBuilder
     required AlignmentGeometry? transformAlignment,
     required Clip clipBehavior,
     required TextDirection? textDirection,
-    RenderBox? child,
+    RenderBox? delegatedChild,
   }) : _alignment = alignment,
        _padding = padding,
        _color = color,
@@ -117,8 +185,9 @@ class RenderContainer extends RenderBoxBuilder
        _transform = transform,
        _transformAlignment = transformAlignment,
        _clipBehavior = clipBehavior,
-       _textDirection = textDirection {
-    this.child = child;
+       _textDirection = textDirection,
+       _delegatedChild = delegatedChild {
+    _rebuild();
   }
 
   AlignmentGeometry? get alignment => _alignment;
@@ -127,7 +196,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_alignment == value) return;
     if (_alignment == null || value == null) {
       _alignment = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _alignment = value;
       _alignmentRenderObject!.alignment = value;
@@ -140,7 +209,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_padding == value) return;
     if (_padding == null || value == null) {
       _padding = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _padding = value;
       _paddingRenderObject!.padding = value;
@@ -153,7 +222,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_color == value) return;
     if (_color == null || value == null) {
       _color = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _color = value;
       _colorRenderObject!.color = value;
@@ -178,7 +247,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_decoration == value) return;
     if (_decoration == null || value == null) {
       _decoration = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _decoration = value;
       _decorationRenderObject!.decoration = value;
@@ -191,7 +260,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_foregroundDecoration == value) return;
     if (_foregroundDecoration == null || value == null) {
       _foregroundDecoration = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _foregroundDecoration = value;
       _foregroundDecorationRenderObject!.decoration = value;
@@ -204,7 +273,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_additionalConstraints == value) return;
     if (_additionalConstraints == null || value == null) {
       _additionalConstraints = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _additionalConstraints = value;
       _additionalConstraintsRenderObject!.additionalConstraints = value;
@@ -217,7 +286,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_margin == value) return;
     if (_margin == null || value == null) {
       _margin = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _marginRenderObject!.padding = value;
       _margin = value;
@@ -230,7 +299,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_transform == value) return;
     if (_transform == null || value == null) {
       _transform = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _transformRenderObject!.transform = value;
       _transform = value;
@@ -257,7 +326,7 @@ class RenderContainer extends RenderBoxBuilder
     if (_clipBehavior == value) return;
     if (_clipBehavior == Clip.none || value == Clip.none) {
       _clipBehavior = value;
-      markNeedsBuild();
+      _rebuild();
     } else {
       _clipBehavior = value;
       _clipRenderObject!.clipBehavior = value;
@@ -285,6 +354,14 @@ class RenderContainer extends RenderBoxBuilder
     _textDirection = value;
   }
 
+  RenderBox? get delegatedChild => _delegatedChild;
+  RenderBox? _delegatedChild;
+  set delegatedChild(RenderBox? value) {
+    if (_delegatedChild == value) return;
+    _delegatedChild = value;
+    _rebuild();
+  }
+
   final Map<_RenderContainerSlot, RenderBox?> _renderObjects = {};
 
   RenderPositionedBox? get _alignmentRenderObject =>
@@ -308,22 +385,11 @@ class RenderContainer extends RenderBoxBuilder
   RenderClipPath? get _clipRenderObject =>
       _renderObjects[_RenderContainerSlot.clipBehavior] as RenderClipPath?;
 
-  @override
-  void didUpdateChild(RenderBox? oldChild) {
-    // oldChild was either the direct child of this render object (e.g it
-    // was returned by build()), or it was the child of a render object
-    // created by build(). For the former, RenderComponentBox will have
-    // already dropped the child. For the latter, we need to update that
-    // render object to drop oldChild.
-    _unparentRenderObject(oldChild);
-  }
-
-  @override
-  RenderBox build() {
-    RenderBox? result = child;
+  void _rebuild() {
+    RenderBox? result = _delegatedChild;
 
     var canAlign = true;
-    if (child == null &&
+    if (result == null &&
         (_additionalConstraints == null || !_additionalConstraints!.isTight)) {
       canAlign = false;
       result = RenderLimitedBox(
@@ -459,7 +525,7 @@ class RenderContainer extends RenderBoxBuilder
       child: result,
     );
 
-    return result!;
+    child = result;
   }
 
   RenderBox? _buildRenderObject<TRenderObject extends RenderBox>({
