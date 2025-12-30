@@ -68,6 +68,7 @@ It's already possible today to compose render objects using
 `RenderProxyBox`:
 
 ```dart
+// A render object that returns "Hello world".
 class RenderHello extends RenderProxyBox {
   RenderHello() {
     child = RenderParagraph(
@@ -77,6 +78,8 @@ class RenderHello extends RenderProxyBox {
   }
 }
 
+// A render object that accepts a render object
+// and wraps it with some padding.
 class RenderPaddingWrapper extends RenderProxyBox {
   RenderPaddingWrapper({
     RenderBox? delegatedChild,
@@ -99,10 +102,11 @@ class RenderPaddingWrapper extends RenderProxyBox {
 However, this approach has problems:
 
 1. `RenderProxyBox.child` is public. Anyone can update this property,
-   which could break your render object's logic.
+   which could break your render object's logic. For example,
+   updating `RenderPaddingWrapper.child` would break this render object.
 
 2. `RenderPaddingWrapper` accepts a `delegatedChild` render object
-   and wraps it additional render objects. You have to create a
+   and wraps it with a `RenderPadding`. You have to create a
    custom element to use this render object in the widget tree.
    Using the normal `SingleChildRenderObjectWidget` would set
    `child` instead of `delegatedChild`.  This requires large
@@ -195,5 +199,3 @@ class _PaddingWrapperElement extends RenderObjectElement {
 ```
 
 </details>
-
-That's a lot of boilerplate!
