@@ -5,15 +5,16 @@
 import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
-import 'package:render_computed_box/render_computed_box.dart';
+import 'package:flutter/widgets.dart';
+import 'package:render_wrapped_box/render_wrapped_box.dart';
 
 void main() {
   runRenderApp(MyApp());
 }
 
-class MyApp extends RenderComputedBox {
+class MyApp extends RenderWrappedBox {
   MyApp() {
-    computedChild = _create();
+    wrappedChild = _create();
   }
 
   late RenderParagraph _paragraph;
@@ -41,7 +42,7 @@ class MyApp extends RenderComputedBox {
             padding: const .all(16.0),
             child: MyButton(
               onPressed: (event) => _onIncrement(),
-              delegatedChild: RenderParagraph(
+              child: RenderParagraph(
                 TextSpan(text: '+ Increment'),
                 textDirection: .ltr,
               ),
@@ -53,15 +54,24 @@ class MyApp extends RenderComputedBox {
   }
 }
 
-class MyButton extends RenderComputedBox
-    with RenderComputedBoxWithDelegatedChildMixin<RenderBox> {
+class PaddingWrapper extends SingleChildRenderObjectWidget {
+  const PaddingWrapper({super.child});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return MyButton(onPressed: (event) {});
+  }
+}
+
+class MyButton extends RenderWrappedBox
+    with RenderWrappedBoxWithChildMixin<RenderBox> {
   MyButton({
     required PointerDownEventListener onPressed,
-    required RenderBox delegatedChild,
+    RenderBox? child,
   }) {
-    computedChild = _create(
+    wrappedChild = _create(
       onPressed: onPressed,
-      delegatedChild: delegatedChild,
+      child: child,
     );
   }
 
@@ -72,18 +82,18 @@ class MyButton extends RenderComputedBox
     _onPressedParent.onPointerDown = value;
   }
 
-  late final RenderPadding _delegatedChildParent;
+  late final RenderPadding _childParent;
 
   @override
-  RenderBox? get delegatedChild => _delegatedChildParent.child;
+  RenderBox? get child => _childParent.child;
   @override
-  set delegatedChild(RenderBox? value) {
-    _delegatedChildParent.child = value;
+  set child(RenderBox? value) {
+    _childParent.child = value;
   }
 
   RenderBox _create({
     required PointerDownEventListener onPressed,
-    required RenderBox delegatedChild,
+    required RenderBox? child,
   }) {
     return _onPressedParent = RenderPointerListener(
       onPointerDown: onPressed,
@@ -92,9 +102,9 @@ class MyButton extends RenderComputedBox
           color: const Color(0xFF0000FF),
           borderRadius: .circular(4.0),
         ),
-        child: _delegatedChildParent = RenderPadding(
+        child: _childParent = RenderPadding(
           padding: const .all(16.0),
-          child: delegatedChild,
+          child: child,
         ),
       ),
     );

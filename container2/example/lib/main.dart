@@ -15,7 +15,6 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
-    Container2();
     return Scaffold(
       body: Center(
         child: Column(

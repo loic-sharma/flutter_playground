@@ -1,13 +1,17 @@
-# `RenderComputedBox`
+# `RenderWrappedBox`
 
-`RenderComputedBox` makes it easier to compose render objects.
+> [!IMPORTANT]  
+> This prototype requires applying the patch in
+> [`flutter.patch`](./flutter.patch) to your Flutter SDK.
+
+`RenderWrappedBox` makes it easier to compose render objects.
 
 Hello world example:
 
 ```dart
-class RenderHello extends RenderComputedBox {
+class RenderHello extends RenderWrappedBox {
   RenderHello() {
-    computedChild = RenderParagraph(
+    wrappedChild = RenderParagraph(
       TextSpan(text: 'Hello world'),
       textDirection: .ltr,
     );
@@ -15,30 +19,29 @@ class RenderHello extends RenderComputedBox {
 }
 ```
 
-You can also create a render object that accepts a child
-render object and wraps it with additional render objects:
+If you apply the patch in [`flutter.patch`](./flutter.patch)
+to the Flutter SDK, you can also create a render object that
+accepts a child render object and wraps it in additional
+render objects:
 
 ```dart
-class RenderPaddingWrapper extends RenderComputedBox
-    with RenderComputedBoxWithChildMixin<RenderBox> {
-  RenderPaddingWrapper({
-    RenderBox? delegatedChild,
-  }) {
-    computedChild = _delegatedChildParent = RenderPadding(
+class RenderPaddingWrapper extends RenderWrappedBox
+    with RenderWrappedBoxWithChildMixin<RenderBox> {
+  RenderPaddingWrapper({RenderBox? child}) {
+    wrappedChild = RenderPadding(
       padding: .all(8),
-      child: delegatedChild,
+      child: child,
     );
   }
 
-  late final RenderPadding _delegatedChildParent;
+  @override
+  RenderPadding get wrappedChild => super.wrappedChild as RenderPadding;
 
   @override
-  RenderBox? get delegatedChild => _delegatedChildParent.child;
+  RenderBox? get child => wrappedChild.child;
 
   @override
-  set delegatedChild(RenderBox? value) {
-    _delegatedChildParent.child = value;
-  }
+  set child(RenderBox? value) => wrappedChild.child = value;
 }
 ```
 
@@ -52,7 +55,7 @@ class Hello extends LeafRenderObjectWidget {
   }
 }
 
-class PaddingWrapper extends RenderComputedBoxWithChildWidget {
+class PaddingWrapper extends SingleChildRenderObject {
   PaddingWrapper({super.child});
 
   @override

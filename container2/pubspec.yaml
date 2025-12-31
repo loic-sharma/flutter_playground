@@ -7,8 +7,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  render_computed_box:
-    path: ../render_computed_box
 
 dev_dependencies:
   flutter_test:
