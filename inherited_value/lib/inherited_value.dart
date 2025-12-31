@@ -34,8 +34,25 @@ class InheritedValue<T> extends StatefulWidget {
   final UpdateShouldNotifyCallback<T>? updateShouldNotify;
   final Widget child;
 
+  static T? maybePeek<T>(BuildContext context) {
+    final element = context.getElementForInheritedWidgetOfExactType<_RawInheritedValue<T>>();
+    return (element?.widget as _RawInheritedValue<T>?)?.value;
+  }
+
+  static T peek<T>(BuildContext context) {
+    final value = maybePeek<T>(context);
+    assert(value != null);
+    return value!;
+  }
+
+  static T? maybeOf<T>(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_RawInheritedValue<T>>()?.value;
+  }
+
   static T of<T>(BuildContext context) {
-    return _RawInheritedValue.of<T>(context);
+    final value = maybeOf<T>(context);
+    assert(value != null);
+    return value!;
   }
 
   @override
@@ -79,16 +96,6 @@ class _RawInheritedValue<T> extends InheritedWidget {
 
   final T value;
   final UpdateShouldNotifyCallback<T> _updateShouldNotifyCallback;
-
-  static T? maybeOf<T>(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<_RawInheritedValue<T>>()?.value;
-  }
-
-  static T of<T>(BuildContext context) {
-    final value = maybeOf<T>(context);
-    assert(value != null);
-    return value!;
-  }
 
   @override
   bool updateShouldNotify(_RawInheritedValue<T> oldWidget) {

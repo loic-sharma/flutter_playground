@@ -260,11 +260,15 @@ class IncrementButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = InheritedValue.of<AppColors>(context);
-    final counter = InheritedValue.of<CounterModel>(context);
  
     return FloatingActionButton(
       foregroundColor: colors.buttonColor,
-      onPressed: counter.increment,
+      onPressed: () {
+        // This uses "peek" to avoid creating a dependency.
+        // IncrementButton does not need to rebuild when
+        // the counter changes.
+        InheritedValue.peek<CounterModel>(context).increment();
+      },
       child: const Icon(Icons.add),
     );
   }
