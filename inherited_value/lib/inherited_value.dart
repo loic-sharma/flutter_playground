@@ -6,25 +6,40 @@ typedef UpdateShouldNotifyCallback<T> = bool Function(T oldValue, T newValue);
 typedef CreateInheritedValuesCallback = void Function(InheritedValueRegistry registry);
 typedef AddInheritedValueCallback = void Function<T>(T value);
 
+// TODO: Add support for Disposable / AsyncDisposable values.
 class InheritedValue<T> extends StatefulWidget {
   const InheritedValue({
     Key? key,
     required CreateInheritedValueCallback<T> create,
+    VoidCallback? onDispose,
     required Widget child,
-  }) : this._(key: key, create: create, child: child);
+  }) : this._(
+    key: key,
+    create: create,
+    onDispose: onDispose,
+    child: child,
+  );
 
   const InheritedValue.value({
     Key? key,
     required T value,
     required UpdateShouldNotifyCallback<T> updateShouldNotify,
+    VoidCallback? onDispose,
     required Widget child,
-  }) : this._(key: key, value: value, updateShouldNotify: updateShouldNotify, child: child);
+  }) : this._(
+    key: key,
+    value: value,
+    updateShouldNotify: updateShouldNotify,
+    onDispose: onDispose,
+    child: child,
+  );
 
   const InheritedValue._({
     super.key,
     this.value,
     this.create,
     this.updateShouldNotify,
+    this.onDispose,
     required this.child,
   }) : assert(value != null || create != null),
        assert((value == null) == (updateShouldNotify == null));
@@ -32,6 +47,7 @@ class InheritedValue<T> extends StatefulWidget {
   final T? value;
   final CreateInheritedValueCallback<T>? create;
   final UpdateShouldNotifyCallback<T>? updateShouldNotify;
+  final VoidCallback? onDispose;
   final Widget child;
 
   static T? maybePeek<T>(BuildContext context) {
@@ -74,6 +90,17 @@ class _InheritedValueState<T> extends State<InheritedValue<T>> {
     if (widget.value != null) {
       value = widget.value!;
     }
+  }
+
+  @override
+  void dispose() {
+    if (widget.onDispose != null) {
+      widget.onDispose!.call();
+    } else {
+      // TODO: Cast to Disposable / AsyncDisposable and call
+      /// dispose method.
+    }
+    super.dispose();
   }
 
   @override
