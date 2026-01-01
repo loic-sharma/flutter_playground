@@ -31,19 +31,14 @@ class HelloPage extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 Widget result = Center(
-                  child: Text(
-                    'Hello world',
-                  ),
+                  child: Text('Hello world'),
                 );
 
                 if (constraints.maxWidth < 400) {
                   result = ColoredBox(
                     color: Colors.lightBlue,
                     child: DefaultTextStyle.merge(
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
+                      style: TextStyle(fontSize: 18),
                       child: result,
                     ),
                   );
