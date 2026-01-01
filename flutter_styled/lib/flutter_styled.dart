@@ -3,19 +3,26 @@ import 'package:flutter/widgets.dart';
 import 'optional_widgets.dart';
 
 class Styled extends StatelessWidget {
-  const Styled({super.key, required this.styles, this.child});
+  const Styled({
+    super.key,
+    this.enabled = true,
+    required this.styles,
+    this.child,
+  });
 
+  final bool enabled;
   final List<Style> styles;
   final Widget? child;
 
   @override
   Widget build(BuildContext context) {
-    return Style.applyStyles(
-      context: context,
-      styles: styles,
-      enabled: true,
-      child: child ?? const SizedBox.shrink(),
-    );
+    var result = child ?? const SizedBox.shrink();
+
+    for (final style in styles.reversed) {
+      result = style.build(context, enabled, result);
+    }
+
+    return result;
   }
 }
 
@@ -25,7 +32,6 @@ typedef StyleBuilder = Widget Function(
   Widget child,
 );
 
-
 abstract class Style {
   const Style();
 
@@ -33,23 +39,7 @@ abstract class Style {
 
   Widget build(BuildContext context, bool enabled, Widget child);
 
-  static Widget applyStyles({
-    required List<Style> styles,
-    required BuildContext context,
-    required bool enabled,
-    required Widget child,
-  }) {
-    var result = child;
-
-    for (final style in styles.reversed) {
-      result = style.build(context, enabled, result);
-    }
-
-    return result;
-  }
-
   const factory Style.none() = NoneStyle;
-  const factory Style.list(List<Style> styles) = Styles;
   const factory Style.builder(StyleBuilder builder) = BuilderStyle;
 
   const factory Style.backgroundColor(Color color) = BackgroundColorStyle;
@@ -70,28 +60,6 @@ class NoneStyle extends Style {
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return child;
-  }
-}
-
-class Styles extends Style {
-  const Styles(this.styles);
-
-  final List<Style> styles;
-
-  @override
-  bool updateShouldRebuild(Styles oldStyle) {
-    return styles != oldStyle.styles;
-  }
-
-  @override
-  Widget build(BuildContext context, bool enabled, Widget child) {
-    var result = child;
-
-    for (final style in styles.reversed) {
-      result = style.build(context, enabled, result);
-    }
-
-    return result;
   }
 }
 
@@ -239,8 +207,7 @@ class HoverStyle extends Style {
     // of the current "control" from the context.
     bool isHovered = WidgetStateContext.isHoveredOf(context);
 
-    return Style.applyStyles(
-      context: context,
+    return Styled(
       styles: styles,
       enabled: enabled && isHovered,
       child: child,
@@ -262,8 +229,7 @@ class SmallScreenStyle extends Style {
   Widget build(BuildContext context, bool enabled, Widget child) {
     final isSmall = MediaQuery.of(context).size.width < 600;
 
-    return Style.applyStyles(
-      context: context,
+    return Styled(
       styles: styles,
       enabled: enabled && isSmall,
       child: child,
