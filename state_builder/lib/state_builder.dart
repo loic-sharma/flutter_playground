@@ -6,6 +6,10 @@ typedef SetState<T> = void Function(T newState);
 
 // TODO: Add support for Disposable / AsyncDisposable states.
 class StateBuilder<T> extends StatefulWidget {
+  // Design desicion: no initialValue.
+  // StateBuilder automatically diposes Disposable / AsyncDisposable states.
+  // If the parent updates StateBuilder with a new initialValue,
+  // it would be weird to autodispose the previous initialValue.
   const StateBuilder({
     super.key,
     required this.create,

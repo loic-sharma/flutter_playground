@@ -54,7 +54,7 @@ class CounterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StateBuilder(
-      create: () => 0,
+      create: (context) => 0,
       builder: (context, int counter, SetState<int> setCounter) {
         return Scaffold(
           body: Center(child: Text('Count: $counter')),
