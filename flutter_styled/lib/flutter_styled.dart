@@ -303,13 +303,14 @@ class SmallScreenStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    final isSmall = MediaQuery.widthOf(context) < 600;
-
-    return Styled(
-      styles: styles,
-      enabled: enabled && isSmall,
-      child: child,
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      bool isSmall = constraints.maxWidth < 400;
+      return Styled(
+        styles: styles,
+        enabled: enabled && isSmall,
+        child: child,
+      );
+    });
   }
 }
 
