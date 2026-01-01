@@ -1,7 +1,7 @@
 name: render_box_builder
 
 environment:
-  sdk: ^3.11.0-142.0.dev
+  sdk: ^3.10.0
   flutter: ">=1.17.0"
 
 dependencies:
