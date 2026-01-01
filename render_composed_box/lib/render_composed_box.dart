@@ -1,59 +1,59 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-class RenderWrappedBox extends RenderBox
-    with RenderWrappedBoxMixin<RenderBox> {
-  RenderWrappedBox([RenderBox? wrappedChild]) {
-    this.wrappedChild = wrappedChild;
+class RenderComposedBox extends RenderBox
+    with RenderComposedBoxMixin<RenderBox> {
+  RenderComposedBox([RenderBox? composedChild]) {
+    this.composedChild = composedChild;
   }
 }
 
-mixin RenderWrappedBoxMixin<ChildType extends RenderBox> on RenderBox {
-  ChildType? _wrappedChild;
+mixin RenderComposedBoxMixin<ChildType extends RenderBox> on RenderBox {
+  ChildType? _composedChild;
 
-  ChildType? get wrappedChild => _wrappedChild;
+  ChildType? get composedChild => _composedChild;
 
   @protected
-  set wrappedChild(ChildType? value) {
-    if (_wrappedChild != null) {
-      dropChild(_wrappedChild!);
+  set composedChild(ChildType? value) {
+    if (_composedChild != null) {
+      dropChild(_composedChild!);
     }
-    _wrappedChild = value;
-    if (_wrappedChild != null) {
-      adoptChild(_wrappedChild!);
+    _composedChild = value;
+    if (_composedChild != null) {
+      adoptChild(_composedChild!);
     }
   }
 
   @override
   void attach(PipelineOwner owner) {
     super.attach(owner);
-    _wrappedChild?.attach(owner);
+    _composedChild?.attach(owner);
   }
 
   @override
   void detach() {
     super.detach();
-    _wrappedChild?.detach();
+    _composedChild?.detach();
   }
 
   @override
   void redepthChildren() {
-    if (_wrappedChild != null) {
-      redepthChild(_wrappedChild!);
+    if (_composedChild != null) {
+      redepthChild(_composedChild!);
     }
   }
 
   @override
   void visitChildren(RenderObjectVisitor visitor) {
-    if (_wrappedChild != null) {
-      visitor(_wrappedChild!);
+    if (_composedChild != null) {
+      visitor(_composedChild!);
     }
   }
 
   @override
   List<DiagnosticsNode> debugDescribeChildren() {
-    return wrappedChild != null
-        ? <DiagnosticsNode>[wrappedChild!.toDiagnosticsNode(name: 'wrappedChild')]
+    return composedChild != null
+        ? <DiagnosticsNode>[composedChild!.toDiagnosticsNode(name: 'composedChild')]
         : <DiagnosticsNode>[];
   }
 
@@ -68,47 +68,47 @@ mixin RenderWrappedBoxMixin<ChildType extends RenderBox> on RenderBox {
 
   @override
   double computeMinIntrinsicWidth(double height) {
-    return _wrappedChild?.getMinIntrinsicWidth(height) ?? 0.0;
+    return _composedChild?.getMinIntrinsicWidth(height) ?? 0.0;
   }
 
   @override
   double computeMaxIntrinsicWidth(double height) {
-    return _wrappedChild?.getMaxIntrinsicWidth(height) ?? 0.0;
+    return _composedChild?.getMaxIntrinsicWidth(height) ?? 0.0;
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    return _wrappedChild?.getMinIntrinsicHeight(width) ?? 0.0;
+    return _composedChild?.getMinIntrinsicHeight(width) ?? 0.0;
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    return _wrappedChild?.getMaxIntrinsicHeight(width) ?? 0.0;
+    return _composedChild?.getMaxIntrinsicHeight(width) ?? 0.0;
   }
 
   @override
   double? computeDistanceToActualBaseline(TextBaseline baseline) {
-    return _wrappedChild?.getDistanceToActualBaseline(baseline) ??
+    return _composedChild?.getDistanceToActualBaseline(baseline) ??
         super.computeDistanceToActualBaseline(baseline);
   }
 
   @override
   @protected
   double? computeDryBaseline(covariant BoxConstraints constraints, TextBaseline baseline) {
-    final double? result = _wrappedChild?.getDryBaseline(constraints, baseline);
+    final double? result = _composedChild?.getDryBaseline(constraints, baseline);
     return result ?? super.computeDryBaseline(constraints, baseline);
   }
 
   @override
   @protected
   Size computeDryLayout(covariant BoxConstraints constraints) {
-    return _wrappedChild?.getDryLayout(constraints) ?? computeSizeForNoChild(constraints);
+    return _composedChild?.getDryLayout(constraints) ?? computeSizeForNoChild(constraints);
   }
 
   @override
   void performLayout() {
     size =
-        (_wrappedChild?..layout(constraints, parentUsesSize: true))?.size ??
+        (_composedChild?..layout(constraints, parentUsesSize: true))?.size ??
         computeSizeForNoChild(constraints);
     return;
   }
@@ -121,7 +121,7 @@ mixin RenderWrappedBoxMixin<ChildType extends RenderBox> on RenderBox {
 
   @override
   bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
-    return _wrappedChild?.hitTest(result, position: position) ?? false;
+    return _composedChild?.hitTest(result, position: position) ?? false;
   }
 
   @override
@@ -129,7 +129,7 @@ mixin RenderWrappedBoxMixin<ChildType extends RenderBox> on RenderBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    final RenderBox? child = _wrappedChild;
+    final RenderBox? child = _composedChild;
     if (child == null) {
       return;
     }
@@ -137,8 +137,8 @@ mixin RenderWrappedBoxMixin<ChildType extends RenderBox> on RenderBox {
   }
 }
 
-mixin RenderWrappedBoxWithChildMixin<ChildType extends RenderBox>
-    on RenderWrappedBoxMixin<ChildType>
+mixin RenderComposedBoxWithChildMixin<ChildType extends RenderBox>
+    on RenderComposedBoxMixin<ChildType>
     implements RenderObjectWithChild<ChildType> {
   @override
   bool debugValidateChild(RenderObject child) {

@@ -6,15 +6,15 @@ import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:render_wrapped_box/render_wrapped_box.dart';
+import 'package:render_composed_box/render_composed_box.dart';
 
 void main() {
   runRenderApp(MyApp());
 }
 
-class MyApp extends RenderWrappedBox {
+class MyApp extends RenderComposedBox {
   MyApp() {
-    wrappedChild = _create();
+    composedChild = _create();
   }
 
   late RenderParagraph _paragraph;
@@ -63,13 +63,13 @@ class PaddingWrapper extends SingleChildRenderObjectWidget {
   }
 }
 
-class MyButton extends RenderWrappedBox
-    with RenderWrappedBoxWithChildMixin<RenderBox> {
+class MyButton extends RenderComposedBox
+    with RenderComposedBoxWithChildMixin<RenderBox> {
   MyButton({
     required PointerDownEventListener onPressed,
     RenderBox? child,
   }) {
-    wrappedChild = _create(
+    composedChild = _create(
       onPressed: onPressed,
       child: child,
     );

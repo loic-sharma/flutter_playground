@@ -1,6 +1,6 @@
 # :warning: ARCHIVED
 
-This was superseded by [`RenderWrappedBox`](../render_wrapped_box/).
+This was superseded by [`RenderComposedBox`](../render_composed_box/).
 
 # Original README
 

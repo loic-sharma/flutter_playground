@@ -1,17 +1,17 @@
-# `RenderWrappedBox`
+# `RenderComposedBox`
 
 > [!IMPORTANT]  
 > This prototype requires applying the patch in
 > [`flutter.patch`](./flutter.patch) to your Flutter SDK.
 
-`RenderWrappedBox` makes it easier to compose render objects.
+`RenderComposedBox` makes it easier to compose render objects.
 
 Hello world example:
 
 ```dart
-class RenderHello extends RenderWrappedBox {
+class RenderHello extends RenderComposedBox {
   RenderHello() {
-    wrappedChild = RenderParagraph(
+    composedChild = RenderParagraph(
       TextSpan(text: 'Hello world'),
       textDirection: .ltr,
     );
@@ -25,23 +25,23 @@ accepts a child render object and wraps it in additional
 render objects:
 
 ```dart
-class RenderPaddingWrapper extends RenderWrappedBox
-    with RenderWrappedBoxWithChildMixin<RenderBox> {
+class RenderPaddingWrapper extends RenderComposedBox
+    with RenderComposedBoxWithChildMixin<RenderBox> {
   RenderPaddingWrapper({RenderBox? child}) {
-    wrappedChild = RenderPadding(
+    composedChild = RenderPadding(
       padding: .all(8),
       child: child,
     );
   }
 
   @override
-  RenderPadding get wrappedChild => super.wrappedChild as RenderPadding;
+  RenderPadding get composedChild => super.composedChild as RenderPadding;
 
   @override
-  RenderBox? get child => wrappedChild.child;
+  RenderBox? get child => composedChild.child;
 
   @override
-  set child(RenderBox? value) => wrappedChild.child = value;
+  set child(RenderBox? value) => composedChild.child = value;
 }
 ```
 
