@@ -42,7 +42,7 @@ class IncrementButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = InheritedValue.of<AppColors>(context);
- 
+
     return FloatingActionButton(
       foregroundColor: colors.buttonColor,
       onPressed: () {

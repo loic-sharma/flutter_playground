@@ -108,7 +108,61 @@ class MyButton extends StatelessWidget {
 </tr>
 </table>
 
-# InheritedValue.value
+# InheritedValues
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(home: CounterScreen()));
+}
+
+class AppColors({final Color buttonColor});
+class CounterModel({final VoidCallback increment});
+
+class CounterScreen extends StatefulWidget {
+  @override
+  State<CounterScreen> createState() => _CounterScreenState();
+}
+
+class _CounterScreenState extends State<CounterScreen> {
+  int counter = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return InheritedValues(
+      create: (values) {
+        values.add(AppColors(buttonColor: Colors.blue));
+        values.add(CounterModel(increment: () => setState(() => counter++)));
+      },
+      child: Scaffold(
+        body: Center(child: Text('Count: $counter')),
+        floatingActionButton: IncrementButton(),
+      ),
+    );
+  }
+}
+
+class IncrementButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final colors = InheritedValue.of<AppColors>(context);
+ 
+    return FloatingActionButton(
+      foregroundColor: colors.buttonColor,
+      onPressed: () {
+        // This uses "peek" to avoid creating a dependency.
+        // IncrementButton does not need to rebuild when
+        // the counter changes.
+        InheritedValue.peek<CounterModel>(context).increment();
+      },
+      child: const Icon(Icons.add),
+    );
+  }
+}
+```
+
+# RawInheritedValue
 
 <table>
 <tr>
@@ -191,7 +245,7 @@ class AppColors({required final Color buttonColor});
 class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return InheritedValue.value(
+    return RawInheritedValue(
       value: AppColors(buttonColor: Colors.blue),
       updateShouldNotify: (oldValue, newValue) {
         return oldValue.buttonColor != newValue.buttonColor;
@@ -206,7 +260,7 @@ class MyScreen extends StatelessWidget {
 class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AppColors colors = InheritedValue.of<AppColors>(context);
+    final AppColors colors = RawInheritedValue.of<AppColors>(context);
 
     return TextButton(
       style: TextButton.styleFrom(foregroundColor: colors.buttonColor),
@@ -220,57 +274,3 @@ class MyButton extends StatelessWidget {
 </td>
 </tr>
 </table>
-  
-# InheritedValues
-
-```dart
-import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MaterialApp(home: CounterScreen()));
-}
-
-class AppColors({final Color buttonColor});
-class CounterModel({final VoidCallback increment});
-
-class CounterScreen extends StatefulWidget {
-  @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int counter = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return InheritedValues(
-      create: (values) {
-        values.add(AppColors(buttonColor: Colors.blue));
-        values.add(CounterModel(increment: () => setState(() => counter++)));
-      },
-      child: Scaffold(
-        body: Center(child: Text('Count: $counter')),
-        floatingActionButton: IncrementButton(),
-      ),
-    );
-  }
-}
-
-class IncrementButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final colors = InheritedValue.of<AppColors>(context);
- 
-    return FloatingActionButton(
-      foregroundColor: colors.buttonColor,
-      onPressed: () {
-        // This uses "peek" to avoid creating a dependency.
-        // IncrementButton does not need to rebuild when
-        // the counter changes.
-        InheritedValue.peek<CounterModel>(context).increment();
-      },
-      child: const Icon(Icons.add),
-    );
-  }
-}
-```

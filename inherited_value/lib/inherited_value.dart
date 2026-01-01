@@ -9,44 +9,104 @@ typedef AddInheritedValueCallback = void Function<T>(T value);
 // TODO: Add support for Disposable / AsyncDisposable values.
 class InheritedValue<T> extends StatefulWidget {
   const InheritedValue({
-    Key? key,
-    required CreateInheritedValueCallback<T> create,
-    VoidCallback? onDispose,
-    required Widget child,
-  }) : this._(
-    key: key,
-    create: create,
-    onDispose: onDispose,
-    child: child,
-  );
-
-  const InheritedValue.value({
-    Key? key,
-    required T value,
-    required UpdateShouldNotifyCallback<T> updateShouldNotify,
-    VoidCallback? onDispose,
-    required Widget child,
-  }) : this._(
-    key: key,
-    value: value,
-    updateShouldNotify: updateShouldNotify,
-    onDispose: onDispose,
-    child: child,
-  );
-
-  const InheritedValue._({
     super.key,
-    this.value,
-    this.create,
-    this.updateShouldNotify,
+    required this.create,
     this.onDispose,
     required this.child,
-  }) : assert(value != null || create != null),
-       assert((value == null) == (updateShouldNotify == null));
+  });
 
-  final T? value;
-  final CreateInheritedValueCallback<T>? create;
-  final UpdateShouldNotifyCallback<T>? updateShouldNotify;
+  final CreateInheritedValueCallback<T> create;
+  final VoidCallback? onDispose;
+  final Widget child;
+
+  static T? maybePeek<T>(BuildContext context) {
+    return RawInheritedValue.maybePeek<T>(context);
+  }
+
+  static T peek<T>(BuildContext context) {
+    return RawInheritedValue.peek<T>(context);
+  }
+
+  static T? maybeOf<T>(BuildContext context) {
+    return RawInheritedValue.maybeOf<T>(context);
+  }
+
+  static T of<T>(BuildContext context) {
+    return RawInheritedValue.of<T>(context);
+  }
+
+  @override
+  State<InheritedValue<T>> createState() => _InheritedValueState<T>();
+}
+
+class _InheritedValueState<T> extends State<InheritedValue<T>> {
+  late T value;
+
+  @override
+  void initState() {
+    super.initState();
+    value = widget.create();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RawInheritedValue<T>(
+      value: value,
+      updateShouldNotify: (T oldValue, T newValue) {
+        assert(oldValue == newValue);
+        return false;
+      },
+      onDispose: widget.onDispose,
+      child: widget.child,
+    );
+  }
+}
+
+// TODO: Add support for Disposable / AsyncDisposable values.
+class InheritedValueRegistry {
+  final List<Widget Function(Widget)> _added = [];
+
+  bool _debugBuilt = false;
+
+  void add<T>(T value) {
+    assert(_debugBuilt == false);
+    _added.add((child) {
+      return RawInheritedValue<T>(
+        value: value,
+        updateShouldNotify: (T oldValue, T newValue) {
+          assert(oldValue == newValue);
+          return false;
+        },
+        child: child,
+      );
+    });
+  }
+
+  Widget _build(Widget child) {
+    assert(() {
+      _debugBuilt = true;
+      return true;
+    }());
+
+    var result = child;
+    for (final wrapper in _added.reversed) {
+      result = wrapper(result);
+    }
+    return result;
+  }
+}
+
+class RawInheritedValue<T> extends StatefulWidget {
+  const RawInheritedValue({
+    super.key,
+    required this.value,
+    required this.updateShouldNotify,
+    this.onDispose,
+    required this.child,
+  });
+
+  final T value;
+  final UpdateShouldNotifyCallback<T> updateShouldNotify;
   final VoidCallback? onDispose;
   final Widget child;
 
@@ -72,20 +132,20 @@ class InheritedValue<T> extends StatefulWidget {
   }
 
   @override
-  State<InheritedValue<T>> createState() => _InheritedValueState<T>();
+  State<RawInheritedValue<T>> createState() => _RawInheritedValueState<T>();
 }
 
-class _InheritedValueState<T> extends State<InheritedValue<T>> {
+class _RawInheritedValueState<T> extends State<RawInheritedValue<T>> {
   late T value;
 
   @override
   void initState() {
     super.initState();
-    value = widget.value ?? widget.create!();
+    value = widget.value;
   }
 
   @override
-  void didUpdateWidget(covariant InheritedValue<T> oldWidget) {
+  void didUpdateWidget(RawInheritedValue<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.value != null) {
       value = widget.value!;
@@ -94,12 +154,7 @@ class _InheritedValueState<T> extends State<InheritedValue<T>> {
 
   @override
   void dispose() {
-    if (widget.onDispose != null) {
-      widget.onDispose!.call();
-    } else {
-      // TODO: Cast to Disposable / AsyncDisposable and call
-      /// dispose method.
-    }
+    widget.onDispose?.call();
     super.dispose();
   }
 
@@ -107,7 +162,7 @@ class _InheritedValueState<T> extends State<InheritedValue<T>> {
   Widget build(BuildContext context) {
     return _RawInheritedValue<T>(
       value: value,
-      updateShouldNotify: widget.updateShouldNotify ?? _defaultUpdateShouldNotify,
+      updateShouldNotify: widget.updateShouldNotify,
       child: widget.child,
     );
   }
@@ -159,37 +214,3 @@ class _InheritedValuesState extends State<InheritedValues> {
   @override
   Widget build(BuildContext context) => values._build(widget.child);
 }
-
-class InheritedValueRegistry {
-  final List<Widget Function(Widget)> _added = [];
-
-  bool _debugBuilt = false;
-
-  void add<T>(T value) {
-    assert(_debugBuilt == false);
-    _added.add((child) {
-      return InheritedValue<T>.value(
-        value: value,
-        updateShouldNotify: _defaultUpdateShouldNotify,
-        child: child,
-      );
-    });
-  }
-
-  Widget _build(Widget child) {
-    assert(() {
-      _debugBuilt = true;
-      return true;
-    }());
-
-    var result = child;
-    for (final wrapper in _added.reversed) {
-      result = wrapper(result);
-    }
-    return result;
-  }
-}
-
-  bool _defaultUpdateShouldNotify<T>(T oldValue, T newValue) {
-    return oldValue != newValue;
-  }

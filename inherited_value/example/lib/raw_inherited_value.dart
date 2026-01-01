@@ -13,7 +13,7 @@ class AppColors {
 class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return InheritedValue.value(
+    return RawInheritedValue(
       value: AppColors(buttonColor: Colors.blue),
       updateShouldNotify: (oldValue, newValue) {
         return oldValue.buttonColor != newValue.buttonColor;
@@ -28,7 +28,7 @@ class MyScreen extends StatelessWidget {
 class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AppColors colors = InheritedValue.of<AppColors>(context);
+    final AppColors colors = RawInheritedValue.of<AppColors>(context);
 
     return TextButton(
       style: TextButton.styleFrom(foregroundColor: colors.buttonColor),
