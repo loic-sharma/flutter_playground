@@ -22,7 +22,7 @@ class HelloPage extends StatelessWidget {
       body: ColoredBox(
         color: Colors.red,
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: .all(16),
           child: DefaultTextStyle.merge(
             style: TextStyle(
               color: Colors.white,
