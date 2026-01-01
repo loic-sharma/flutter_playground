@@ -1,7 +1,6 @@
 # Flutter playground
 
-The following are experiments that I hope to one day upstream
-to Flutter:
+The following are experiments that I hope to upstream to Flutter:
 
 * [`container2/`](./container2/) - `Container2`, a drop-in replacement for `Container` that fixes `Container`'s [state loss problem](https://github.com/flutter/flutter/issues/161698).
 * [`flutter_styled/`](./flutter_styled/) - `Styled`, a widget that makes it easier to style a child widget.
