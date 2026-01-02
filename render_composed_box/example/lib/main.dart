@@ -54,15 +54,6 @@ class MyApp extends RenderComposedBox {
   }
 }
 
-class PaddingWrapper extends SingleChildRenderObjectWidget {
-  const PaddingWrapper({super.child});
-
-  @override
-  RenderObject createRenderObject(BuildContext context) {
-    return MyButton(onPressed: (event) {});
-  }
-}
-
 class MyButton extends RenderComposedBox
     with RenderComposedBoxWithChildMixin<RenderBox> {
   MyButton({
