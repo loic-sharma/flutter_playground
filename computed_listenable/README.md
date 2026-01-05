@@ -35,11 +35,7 @@ class Model extends ChangeNotifier {
   IconData get icon => _increase ? Icons.add : Icons.remove;
 
   void updateCount() {
-    if (increase) {
-      _counter++;
-    } else {
-      _counter--;
-    }
+    _counter += increase ? 1 : -1;
     notifyListeners();
   }
 }
@@ -108,18 +104,7 @@ class Model {
   });
 
   void updateCount() {
-    if (increase.value) {
-      _counter.value++;
-    } else {
-      _counter.value--;
-    }
-  }
-
-  void dispose() {
-    _counter.dispose();
-    increase.dispose();
-    _direction.dispose();
-    _icon.dispose();
+    _counter.value += increase.value ? 1 : -1;
   }
 }
 
@@ -131,37 +116,19 @@ class MyScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ValueListenableBuilder(
-              valueListenable: model.counter,
-              builder: (context, value, child) {
-                return Text('Counter: $value');
-              },
-            ),
+            Text('Counter: ${context.watch(model.counter)}'),
             SizedBox(height: 64),
-            ValueListenableBuilder(
-              valueListenable: model.direction,
-              builder: (context, value, child) {
-                return Text('Direction: $value');
-              },
-            ),
-            ValueListenableBuilder(
-              valueListenable: model.increase,
-              builder: (context, value, child) => Switch(
-                value: model.increase.value,
-                onChanged: (value) => model.increase.value = value,
-              ),
+            Text('Direction: ${context.watch(model.direction)}'),
+            Switch(
+              value: context.watch(model.increase),
+              onChanged: (value) => model.increase.value = value,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: model.updateCount,
-        child: ValueListenableBuilder(
-          valueListenable: model.icon,
-          builder: (context, value, child) {
-            return Icon(value);
-          },
-        ),
+        child: Icon(context.watch(model.icon)),
       ),
     );
   }

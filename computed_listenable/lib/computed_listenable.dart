@@ -91,6 +91,19 @@ class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
     return valueListenable.value;
   }
 
+  @override
+  void dispose() {
+    assert(_debugIsBuilding == false);
+
+    if (_listenables != null) {
+      for (final listenable in _listenables!) {
+        listenable.removeListener(markDirty);
+      }
+      _listenables = null;
+    }
+    super.dispose();
+  }
+
   bool _debugCheckIsBuilding(String methodName) {
     if (!_debugIsBuilding) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
@@ -124,6 +137,8 @@ class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
       return;
     }
 
+    assert(_newListenables == null);
+    assert(_unchangedListenables == 0);
     assert(() {
       _debugIsBuilding = true;
       return true;
