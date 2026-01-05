@@ -4,6 +4,7 @@ The following are experiments that I hope to upstream to Flutter:
 
 Directory | Description
 -- | --
+[`computed_listenable/`](./computed_listenable/) | `ComputedListenable`, a `ValueListenable` that computes a value using other listenables.
 [`container2/`](./container2/) | `Container2`, a drop-in replacement for `Container` that fixes `Container`'s [state loss problem](https://github.com/flutter/flutter/issues/161698).
 [`flutter_analyzers/`](./flutter_analyzers/) | Dart analyzer plugin for Flutter.
 [`flutter_styled/`](./flutter_styled/) | `Styled`, a widget that makes it easier to style a child widget.
