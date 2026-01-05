@@ -1,5 +1,9 @@
 # ComputedListenable
 
+> [!WARNING]  
+> ComputedListenable does not work well with Dart's hot reload.
+> You need to hot restart after changing the callback's code.
+
 <table>
 <tr>
   <td>Before</td>
