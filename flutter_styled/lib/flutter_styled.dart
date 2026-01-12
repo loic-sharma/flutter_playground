@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'optional_widgets.dart';
+import 'src/optional_widgets.dart';
 
 class Styled extends StatefulWidget {
   const Styled({
@@ -116,6 +116,7 @@ abstract class Style {
   Widget build(BuildContext context, bool enabled, Widget child);
 
   const factory Style.none() = NoneStyle;
+  const factory Style.when({required bool condition, List<Style>? thenStyle, List<Style>? elseStyle}) = WhenStyle;
   const factory Style.builder(StyleBuilder builder) = BuilderStyle;
 
   const factory Style.backgroundColor(Color color) = BackgroundColorStyle;
@@ -155,30 +156,33 @@ class BuilderStyle extends Style {
   }
 }
 
-class IfStyle extends Style {
-  const IfStyle({
+class WhenStyle extends Style {
+  const WhenStyle({
     required this.condition,
-    required this.style,
+    this.thenStyle,
     this.elseStyle
   });
 
   final bool condition;
-  final Style style;
-  final Style? elseStyle;
+  final List<Style>? thenStyle;
+  final List<Style>? elseStyle;
 
   @override
-  bool updateShouldRebuild(IfStyle oldStyle) {
-    return condition != oldStyle.condition || style != oldStyle.style;
+  bool updateShouldRebuild(WhenStyle oldStyle) {
+    return condition != oldStyle.condition || thenStyle != oldStyle.thenStyle || elseStyle != oldStyle.elseStyle;
   }
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    final elseStyle = this.elseStyle ?? const NoneStyle();
-
-    Widget result = child;
-    result = elseStyle.build(context, enabled && !condition, result);
-    result = style.build(context, enabled && condition, result);
-    return result;
+    return Styled(
+      styles: thenStyle ?? const [],
+      enabled: enabled && condition,
+      child: Styled(
+        styles: elseStyle ?? const [],
+        enabled: enabled && !condition,
+        child: child,
+      ),
+    );
   }
 }
 

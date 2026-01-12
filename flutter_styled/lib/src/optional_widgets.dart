@@ -1,4 +1,6 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_styled/src/optionally_wrapped_box.dart';
 
 class OptionalColoredBox extends StatelessWidget {
   const OptionalColoredBox({
@@ -63,22 +65,43 @@ class OptionalDefaultTextStyle extends StatelessWidget {
   }
 }
 
-class OptionalCenter extends StatelessWidget {
-  const OptionalCenter({
-    super.key,
-    required this.enabled,
-    required this.child,
-  });
+class OptionalCenter extends OptionalAlign {
+  const OptionalCenter({super.key, super.enabled, super.widthFactor, super.heightFactor, super.child});
+}
 
-  final bool enabled;
-  final Widget child;
+class OptionalAlign extends OptionallyWrappedChildWidget {
+  const OptionalAlign({
+    super.key,
+    super.enabled,
+    this.alignment = Alignment.center,
+    this.widthFactor,
+    this.heightFactor,
+    super.child,
+  }) : assert(widthFactor == null || widthFactor >= 0.0),
+       assert(heightFactor == null || heightFactor >= 0.0);
+
+  final AlignmentGeometry alignment;
+
+  final double? widthFactor;
+
+  final double? heightFactor;
 
   @override
-  Widget build(BuildContext context) {
-    // TODO
-    assert(enabled, 'TODO: implement disabled Center');
-    return Center(
-      child: child,
+  RenderPositionedBox createWrapperRenderBox(BuildContext context) {
+    return RenderPositionedBox(
+      alignment: alignment,
+      widthFactor: widthFactor,
+      heightFactor: heightFactor,
+      textDirection: Directionality.maybeOf(context),
     );
+  }
+
+  @override
+  void updateWrapperRenderBox(BuildContext context, RenderPositionedBox renderObject) {
+    renderObject
+      ..alignment = alignment
+      ..widthFactor = widthFactor
+      ..heightFactor = heightFactor
+      ..textDirection = Directionality.maybeOf(context);
   }
 }
