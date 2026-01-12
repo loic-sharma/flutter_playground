@@ -99,6 +99,9 @@ class _OptionallyWrappedChildWidgetElement extends RenderObjectElement {
   }
 }
 
+// TODO: _OptionallyWrappedRenderBox.child has a public setter.
+// Using this setter breaks _OptionallyWrappedRenderBox.
+// We should make _OptionallyWrappedRenderBox.child read-only.
 class _OptionallyWrappedRenderBox extends RenderProxyBox {
   _OptionallyWrappedRenderBox({
     bool enabled = true,
