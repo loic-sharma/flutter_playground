@@ -75,7 +75,7 @@ class HelloPage extends StatelessWidget {
           .backgroundColor(Colors.red),
           .padding(.all(16)),
           .textStyle(color: Colors.white, fontSize: 100),
-          .onSmall([
+          .whenSmall([
             .backgroundColor(Colors.lightBlue),
             .textStyle(color: Colors.white, fontSize: 18),
           ]),
@@ -91,3 +91,58 @@ class HelloPage extends StatelessWidget {
 </td>
 </tr>
 </table>
+
+
+------
+
+TODO:
+
+Directionality
+ShaderMask
+BackdropGroup
+BackdropFilter
+CustomPaint
+ClipRSuperellipse
+ClipOval
+ClipPath
+CompositedTransformTarget
+CompositedTransformFollower
+FittedBox
+FractionalTranslation
+RotatedBox
+SizedBox
+ConstrainedBox
+ConstraintsTransformBox
+UnconstrainedBox
+FractionallySizedBox
+LimitedBox
+OverflowBox
+SizedOverflowBox
+Offstage
+AspectRatio
+InstrinsicWidth
+IntrinsicHeight
+Baseline
+IgnoreBaseline
+Positioned
+PositionedDirectional
+Flexible
+Expanded
+Listener
+MouseRegion
+RepaintBoundary
+IgnorePointer
+AbsorbPointer
+Semantics
+MergeSemantics
+BlockSemantics
+ExcludeSemantics
+KeyedSubtree
+ColoredBox
+KeyboardListener
+GestureDetector
+DecoratedBox
+
+TODO:
+Slivers?
+Animations? https://docs.flutter.dev/ui/widgets/animation

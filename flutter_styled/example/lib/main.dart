@@ -14,7 +14,7 @@ class HelloPage extends StatelessWidget {
           .backgroundColor(Colors.red),
           .padding(.all(16)),
           .textStyle(color: Colors.white, fontSize: 100),
-          .onSmall([
+          .whenSmall([
             .backgroundColor(Colors.lightBlue),
             .textStyle(fontSize: 18),
           ]),

@@ -105,3 +105,110 @@ class OptionalAlign extends OptionallyWrappedChildWidget {
       ..textDirection = Directionality.maybeOf(context);
   }
 }
+
+class OptionalOpacity extends StatelessWidget {
+  const OptionalOpacity({
+    super.key,
+    required this.enabled,
+    required this.opacity,
+    this.alwaysIncludeSemantics = false,
+    required this.child,
+  });
+
+  final bool enabled;
+  final double opacity;
+  final bool alwaysIncludeSemantics;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: enabled ? opacity : 1.0,
+      child: child,
+    );
+  }
+}
+
+class OptionalClipRect extends StatelessWidget {
+  const OptionalClipRect({
+    super.key,
+    required this.enabled,
+    this.clipper,
+    this.clipBehavior = Clip.hardEdge,
+    required this.child,
+  });
+
+  final bool enabled;
+  final CustomClipper<Rect>? clipper;
+  final Clip clipBehavior;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      clipper: enabled ? clipper : null,
+      clipBehavior: enabled ? clipBehavior : Clip.none,
+      child: child,
+    );
+  }
+}
+
+class OptionalClipRRect extends StatelessWidget {
+  const OptionalClipRRect({
+    super.key,
+    required this.enabled,
+    this.borderRadius = BorderRadius.zero,
+    this.clipper,
+    this.clipBehavior = Clip.antiAlias,
+    required this.child,
+  });
+
+  final bool enabled;
+  final BorderRadius borderRadius;
+  final CustomClipper<RRect>? clipper;
+  final Clip clipBehavior;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: enabled ? borderRadius : BorderRadius.zero,
+      clipper: clipper,
+      clipBehavior: enabled ? clipBehavior : Clip.none,
+      child: child,
+    );
+  }
+}
+
+class OptionalTransform extends StatelessWidget {
+  const OptionalTransform({
+    super.key,
+    required this.enabled,
+    required this.transform,
+    this.alignment,
+    this.transformHitTests = true,
+    this.filterQuality,
+    this.origin,
+    required this.child,
+  });
+
+  final bool enabled;
+  final Matrix4 transform;
+  final Offset? origin;
+  final AlignmentGeometry? alignment;
+  final bool transformHitTests;
+  final FilterQuality? filterQuality;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform(
+      transform: enabled ? transform : Matrix4.identity(),
+      origin: enabled ? origin : null,
+      alignment: enabled ? alignment : null,
+      transformHitTests: enabled? transformHitTests : false,
+      filterQuality: enabled ? filterQuality : null,
+      child: child,
+    );
+  }
+}
