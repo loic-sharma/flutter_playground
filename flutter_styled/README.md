@@ -110,7 +110,6 @@ CompositedTransformFollower
 FittedBox
 FractionalTranslation
 RotatedBox
-SizedBox
 ConstrainedBox
 ConstraintsTransformBox
 UnconstrainedBox

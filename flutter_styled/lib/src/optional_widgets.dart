@@ -180,6 +180,42 @@ class OptionalClipRRect extends StatelessWidget {
   }
 }
 
+class OptionalSizedBox extends StatelessWidget {
+  const OptionalSizedBox({
+    super.key,
+    required this.enabled,
+    this.width,
+    this.height,
+    required this.child,
+  });
+
+  const OptionalSizedBox.expand({
+    super.key,
+    required this.enabled,
+    required this.child,
+  }) : width = double.infinity, height = double.infinity;
+
+  const OptionalSizedBox.shrink({
+    super.key,
+    required this.enabled,
+    required this.child,
+  }) : width = 0.0, height = 0.0;
+
+  final bool enabled;
+  final double? width;
+  final double? height;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: enabled ? width : null,
+      height: enabled ? height : null,
+      child: child,
+    );
+  }
+}
+
 class OptionalTransform extends StatelessWidget {
   const OptionalTransform({
     super.key,

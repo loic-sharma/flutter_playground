@@ -17,8 +17,12 @@ abstract class Style {
   const factory Style.center() = CenterStyle;
   const factory Style.clipRect({CustomClipper<Rect>? clipper, Clip clipBehavior}) = ClipRectStyle;
   const factory Style.clipRRect({BorderRadius borderRadius, CustomClipper<RRect>? clipper, Clip clipBehavior}) = ClipRRectStyle;
+  const factory Style.expand() = ExpandStyle;
+  const factory Style.height(double height) = HeightStyle;
   const factory Style.opacity(double opacity, {bool alwaysIncludeSemantics}) = OpacityStyle;
   const factory Style.padding(EdgeInsetsGeometry insets) = PaddingStyle;
+  const factory Style.shrink() = ShrinkStyle;
+  const factory Style.size({double? width, double? height}) = SizeStyle;
   const factory Style.textStyle({Color? color, double? fontSize}) = TextStyleStyle;
   const factory Style.transform({
     required Matrix4 transform,
@@ -27,6 +31,7 @@ abstract class Style {
     FilterQuality? filterQuality,
     Offset? origin,
   }) = TransformStyle;
+  const factory Style.width(double width) = WidthStyle;
 
   const factory Style.when({required bool condition, List<Style>? thenStyle, List<Style>? elseStyle}) = WhenStyle;
   const factory Style.whenSmall(List<Style> styles) = WhenSmallStyle;
@@ -199,6 +204,38 @@ class WhenSmallStyle extends Style {
   }
 }
 
+class ExpandStyle extends Style {
+  const ExpandStyle();
+
+  @override
+  bool updateShouldRebuild(covariant Style oldStyle) => false;
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return OptionalSizedBox.expand(enabled: enabled, child: child);
+  }
+}
+
+class HeightStyle extends Style {
+  const HeightStyle(this.height);
+
+  final double height;
+
+  @override
+  bool updateShouldRebuild(covariant HeightStyle oldStyle) {
+    return height != oldStyle.height;
+  }
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return OptionalSizedBox(
+      enabled: enabled,
+      height: height,
+      child: child,
+    );
+  }
+}
+
 class OpacityStyle extends Style {
   const OpacityStyle(
     this.opacity, {
@@ -273,6 +310,40 @@ class ClipRRectStyle extends Style {
   }
 }
 
+class ShrinkStyle extends Style {
+  const ShrinkStyle();
+
+  @override
+  bool updateShouldRebuild(covariant Style oldStyle) => false;
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return OptionalSizedBox.shrink(enabled: enabled, child: child);
+  }
+}
+
+class SizeStyle extends Style {
+  const SizeStyle({this.width, this.height});
+
+  final double? width;
+  final double? height;
+
+  @override
+  bool updateShouldRebuild(SizeStyle oldStyle) {
+    return width != oldStyle.width || height != oldStyle.height;
+  }
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return OptionalSizedBox(
+      enabled: enabled,
+      width: width,
+      height: height,
+      child: child,
+    );
+  }
+}
+
 class TransformStyle extends Style {
   const TransformStyle({
     required this.transform,
@@ -305,6 +376,26 @@ class TransformStyle extends Style {
       alignment: enabled ? alignment : null,
       transformHitTests: enabled? transformHitTests : false,
       filterQuality: enabled ? filterQuality : null,
+      child: child,
+    );
+  }
+}
+
+class WidthStyle extends Style {
+  const WidthStyle(this.width);
+
+  final double width;
+
+  @override
+  bool updateShouldRebuild(covariant WidthStyle oldStyle) {
+    return width != oldStyle.width;
+  }
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return OptionalSizedBox(
+      enabled: enabled,
+      width: width,
       child: child,
     );
   }
