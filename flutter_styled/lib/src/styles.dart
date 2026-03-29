@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'optional_widgets.dart';
 import 'styled.dart';
 
+@immutable
 abstract class Style {
   const Style();
 
