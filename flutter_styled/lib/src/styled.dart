@@ -58,7 +58,7 @@ class _StyledState extends State<Styled> {
         continue;
       }
 
-      if (identical(style, oldStyle)) {
+      if (style == oldStyle) {
         continue;
       }
 

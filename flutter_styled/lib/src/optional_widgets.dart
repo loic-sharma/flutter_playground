@@ -1,6 +1,7 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_styled/src/optionally_wrapped_box.dart';
+
+import 'optionally_wrapped_box.dart';
 
 class OptionalColoredBox extends StatelessWidget {
   const OptionalColoredBox({
