@@ -7,8 +7,6 @@ import 'styled.dart';
 abstract class Style {
   const Style();
 
-  bool updateShouldRebuild(covariant Style oldStyle);
-
   Widget build(BuildContext context, bool enabled, Widget child);
 
   const factory Style.none() = NoneStyle;
@@ -42,9 +40,6 @@ class NoneStyle extends Style {
   const NoneStyle();
 
   @override
-  bool updateShouldRebuild(NoneStyle oldStyle) => false;
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return child;
   }
@@ -56,11 +51,6 @@ class BuilderStyle extends Style {
   final StyleBuilder builder;
 
   @override
-  bool updateShouldRebuild(BuilderStyle oldStyle) {
-    return builder != oldStyle.builder;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return builder(context, enabled, child);
   }
@@ -70,11 +60,6 @@ class BackgroundColorStyle extends Style {
   const BackgroundColorStyle(this.color);
 
   final Color color;
-
-  @override
-  bool updateShouldRebuild(BackgroundColorStyle oldStyle) {
-    return color != oldStyle.color;
-  }
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
@@ -90,11 +75,6 @@ class CenterStyle extends Style {
   const CenterStyle();
 
   @override
-  bool updateShouldRebuild(CenterStyle oldStyle) {
-    return false;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return OptionalCenter(
       enabled: enabled,
@@ -107,11 +87,6 @@ class PaddingStyle extends Style {
   const PaddingStyle(this.insets);
 
   final EdgeInsetsGeometry insets;
-
-  @override
-  bool updateShouldRebuild(PaddingStyle oldStyle) {
-    return insets != oldStyle.insets;
-  }
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
@@ -137,11 +112,6 @@ class TextStyleStyle extends Style {
   }
 
   @override
-  bool updateShouldRebuild(TextStyleStyle oldStyle) {
-    return style != oldStyle.style;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return OptionalDefaultTextStyle(
       enabled: enabled,
@@ -163,11 +133,6 @@ class WhenStyle extends Style {
   final List<Style>? elseStyle;
 
   @override
-  bool updateShouldRebuild(WhenStyle oldStyle) {
-    return condition != oldStyle.condition || thenStyle != oldStyle.thenStyle || elseStyle != oldStyle.elseStyle;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return Styled(
       styles: thenStyle ?? const [],
@@ -187,11 +152,6 @@ class WhenSmallStyle extends Style {
   final List<Style> styles;
 
   @override
-  bool updateShouldRebuild(WhenSmallStyle oldStyle) {
-    return styles != oldStyle.styles;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return LayoutBuilder(builder: (context, constraints) {
       // TODO: Use inherited widget for breakpoints
@@ -205,11 +165,11 @@ class WhenSmallStyle extends Style {
   }
 }
 
+// TODO: .expand() and .expanded() are subtle differences.
+// Consider removing this, or renaming to something like
+// .biggest() or .widen() or .spread().
 class ExpandStyle extends Style {
   const ExpandStyle();
-
-  @override
-  bool updateShouldRebuild(covariant Style oldStyle) => false;
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
@@ -221,11 +181,6 @@ class HeightStyle extends Style {
   const HeightStyle(this.height);
 
   final double height;
-
-  @override
-  bool updateShouldRebuild(covariant HeightStyle oldStyle) {
-    return height != oldStyle.height;
-  }
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
@@ -247,14 +202,10 @@ class OpacityStyle extends Style {
   final bool alwaysIncludeSemantics;
 
   @override
-  bool updateShouldRebuild(OpacityStyle oldStyle) {
-    return opacity != oldStyle.opacity || alwaysIncludeSemantics != oldStyle.alwaysIncludeSemantics;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return Opacity(
       opacity: enabled ? opacity : 1.0,
+      alwaysIncludeSemantics: alwaysIncludeSemantics,
       child: child,
     );
   }
@@ -268,11 +219,6 @@ class ClipRectStyle extends Style {
 
   final CustomClipper<Rect>? clipper;
   final Clip clipBehavior;
-
-  @override
-  bool updateShouldRebuild(ClipRectStyle oldStyle) {
-    return clipper != oldStyle.clipper || clipBehavior != oldStyle.clipBehavior;
-  }
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
@@ -296,11 +242,6 @@ class ClipRRectStyle extends Style {
   final Clip clipBehavior;
 
   @override
-  bool updateShouldRebuild(ClipRRectStyle oldStyle) {
-    return borderRadius != oldStyle.borderRadius || clipper != oldStyle.clipper || clipBehavior != oldStyle.clipBehavior;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return ClipRRect(
       borderRadius: enabled ? borderRadius : BorderRadius.zero,
@@ -315,9 +256,6 @@ class ShrinkStyle extends Style {
   const ShrinkStyle();
 
   @override
-  bool updateShouldRebuild(covariant Style oldStyle) => false;
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return OptionalSizedBox.shrink(enabled: enabled, child: child);
   }
@@ -328,11 +266,6 @@ class SizeStyle extends Style {
 
   final double? width;
   final double? height;
-
-  @override
-  bool updateShouldRebuild(SizeStyle oldStyle) {
-    return width != oldStyle.width || height != oldStyle.height;
-  }
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
@@ -361,15 +294,6 @@ class TransformStyle extends Style {
   final FilterQuality? filterQuality;
 
   @override
-  bool updateShouldRebuild(TransformStyle oldStyle) {
-    return transform != oldStyle.transform ||
-        origin != oldStyle.origin ||
-        alignment != oldStyle.alignment ||
-        transformHitTests != oldStyle.transformHitTests ||
-        filterQuality != oldStyle.filterQuality;
-  }
-
-  @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return Transform(
       transform: enabled ? transform : Matrix4.identity(),
@@ -386,11 +310,6 @@ class WidthStyle extends Style {
   const WidthStyle(this.width);
 
   final double width;
-
-  @override
-  bool updateShouldRebuild(covariant WidthStyle oldStyle) {
-    return width != oldStyle.width;
-  }
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
