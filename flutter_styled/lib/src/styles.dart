@@ -14,15 +14,24 @@ abstract class Style {
 
   const factory Style.backgroundColor(Color color) = BackgroundColorStyle;
   const factory Style.center() = CenterStyle;
-  const factory Style.clipRect({CustomClipper<Rect>? clipper, Clip clipBehavior}) = ClipRectStyle;
-  const factory Style.clipRRect({BorderRadius borderRadius, CustomClipper<RRect>? clipper, Clip clipBehavior}) = ClipRRectStyle;
+  const factory Style.clipRect({
+    CustomClipper<Rect>? clipper,
+    Clip clipBehavior,
+  }) = ClipRectStyle;
+  const factory Style.clipRRect({
+    BorderRadius borderRadius,
+    CustomClipper<RRect>? clipper,
+    Clip clipBehavior,
+  }) = ClipRRectStyle;
   const factory Style.expand() = ExpandStyle;
   const factory Style.height(double height) = HeightStyle;
-  const factory Style.opacity(double opacity, {bool alwaysIncludeSemantics}) = OpacityStyle;
+  const factory Style.opacity(double opacity, {bool alwaysIncludeSemantics}) =
+      OpacityStyle;
   const factory Style.padding(EdgeInsetsGeometry insets) = PaddingStyle;
   const factory Style.shrink() = ShrinkStyle;
   const factory Style.size({double? width, double? height}) = SizeStyle;
-  const factory Style.textStyle({Color? color, double? fontSize}) = TextStyleStyle;
+  const factory Style.textStyle({Color? color, double? fontSize}) =
+      TextStyleStyle;
   const factory Style.transform({
     required Matrix4 transform,
     AlignmentGeometry? alignment,
@@ -32,7 +41,11 @@ abstract class Style {
   }) = TransformStyle;
   const factory Style.width(double width) = WidthStyle;
 
-  const factory Style.when({required bool condition, List<Style>? thenStyle, List<Style>? elseStyle}) = WhenStyle;
+  const factory Style.when({
+    required bool condition,
+    List<Style>? thenStyle,
+    List<Style>? elseStyle,
+  }) = WhenStyle;
   const factory Style.whenSmall(List<Style> styles) = WhenSmallStyle;
 }
 
@@ -63,11 +76,7 @@ class BackgroundColorStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    return OptionalColoredBox(
-      enabled: enabled,
-      color: color,
-      child: child,
-    );
+    return OptionalColoredBox(enabled: enabled, color: color, child: child);
   }
 }
 
@@ -76,10 +85,7 @@ class CenterStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    return OptionalCenter(
-      enabled: enabled,
-      child: child,
-    );
+    return OptionalCenter(enabled: enabled, child: child);
   }
 }
 
@@ -90,11 +96,7 @@ class PaddingStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    return OptionalPadding(
-      enabled: enabled,
-      padding: insets,
-      child: child,
-    );
+    return OptionalPadding(enabled: enabled, padding: insets, child: child);
   }
 }
 
@@ -105,10 +107,7 @@ class TextStyleStyle extends Style {
   final double? fontSize;
 
   TextStyle get style {
-    return TextStyle(
-      color: color,
-      fontSize: fontSize,
-    );
+    return TextStyle(color: color, fontSize: fontSize);
   }
 
   @override
@@ -122,11 +121,7 @@ class TextStyleStyle extends Style {
 }
 
 class WhenStyle extends Style {
-  const WhenStyle({
-    required this.condition,
-    this.thenStyle,
-    this.elseStyle
-  });
+  const WhenStyle({required this.condition, this.thenStyle, this.elseStyle});
 
   final bool condition;
   final List<Style>? thenStyle;
@@ -153,15 +148,17 @@ class WhenSmallStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    return LayoutBuilder(builder: (context, constraints) {
-      // TODO: Use inherited widget for breakpoints
-      bool isSmall = constraints.maxWidth < 400;
-      return Styled(
-        styles: styles,
-        enabled: enabled && isSmall,
-        child: child,
-      );
-    });
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // TODO: Use inherited widget for breakpoints
+        bool isSmall = constraints.maxWidth < 400;
+        return Styled(
+          styles: styles,
+          enabled: enabled && isSmall,
+          child: child,
+        );
+      },
+    );
   }
 }
 
@@ -184,19 +181,12 @@ class HeightStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    return OptionalSizedBox(
-      enabled: enabled,
-      height: height,
-      child: child,
-    );
+    return OptionalSizedBox(enabled: enabled, height: height, child: child);
   }
 }
 
 class OpacityStyle extends Style {
-  const OpacityStyle(
-    this.opacity, {
-    this.alwaysIncludeSemantics = false,
-  });
+  const OpacityStyle(this.opacity, {this.alwaysIncludeSemantics = false});
 
   final double opacity;
   final bool alwaysIncludeSemantics;
@@ -212,10 +202,7 @@ class OpacityStyle extends Style {
 }
 
 class ClipRectStyle extends Style {
-  const ClipRectStyle({
-    this.clipper,
-    this.clipBehavior = Clip.hardEdge,
-  });
+  const ClipRectStyle({this.clipper, this.clipBehavior = Clip.hardEdge});
 
   final CustomClipper<Rect>? clipper;
   final Clip clipBehavior;
@@ -299,7 +286,7 @@ class TransformStyle extends Style {
       transform: enabled ? transform : Matrix4.identity(),
       origin: enabled ? origin : null,
       alignment: enabled ? alignment : null,
-      transformHitTests: enabled? transformHitTests : false,
+      transformHitTests: enabled ? transformHitTests : false,
       filterQuality: enabled ? filterQuality : null,
       child: child,
     );
@@ -313,10 +300,6 @@ class WidthStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
-    return OptionalSizedBox(
-      enabled: enabled,
-      width: width,
-      child: child,
-    );
+    return OptionalSizedBox(enabled: enabled, width: width, child: child);
   }
 }
