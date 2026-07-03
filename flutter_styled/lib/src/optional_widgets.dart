@@ -70,6 +70,10 @@ class OptionalCenter extends OptionalAlign {
   const OptionalCenter({super.key, super.enabled, super.widthFactor, super.heightFactor, super.child});
 }
 
+// TODO: An alternative might be to react a OptionalRenderPositionedBox that extends
+// RenderPositionedBox and accepts an enabled flag. If enabled is false, it would
+// return the child without applying any alignment. This would avoid the extra
+// render object by OptionallyWrappedChildWidget.
 class OptionalAlign extends OptionallyWrappedChildWidget {
   const OptionalAlign({
     super.key,

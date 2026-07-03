@@ -129,6 +129,8 @@ class WhenStyle extends Style {
 
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
+    // TODO: Consider only creating a Styled widget if the styles are not empty.
+    // This reduces widget nesting but can cause state loss if the styles change.
     return Styled(
       styles: thenStyle ?? const [],
       enabled: enabled && condition,
