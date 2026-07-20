@@ -23,11 +23,19 @@ abstract class Style {
     CustomClipper<RRect>? clipper,
     Clip clipBehavior,
   }) = ClipRRectStyle;
+  const factory Style.directionality(TextDirection textDirection) =
+      DirectionalityStyle;
   const factory Style.expand() = ExpandStyle;
+  const factory Style.fit(
+    BoxFit fit, {
+    AlignmentGeometry alignment,
+    Clip clipBehavior,
+  }) = FitStyle;
   const factory Style.height(double height) = HeightStyle;
   const factory Style.opacity(double opacity, {bool alwaysIncludeSemantics}) =
       OpacityStyle;
   const factory Style.padding(EdgeInsetsGeometry insets) = PaddingStyle;
+  const factory Style.rotated({required int quarterTurns}) = RotatedStyle;
   const factory Style.shrink() = ShrinkStyle;
   const factory Style.size({double? width, double? height}) = SizeStyle;
   const factory Style.textStyle({Color? color, double? fontSize}) =
@@ -39,6 +47,12 @@ abstract class Style {
     FilterQuality? filterQuality,
     Offset? origin,
   }) = TransformStyle;
+  const factory Style.unconstrained({
+    TextDirection? textDirection,
+    AlignmentGeometry alignment,
+    Axis? constrainedAxis,
+    Clip clipBehavior,
+  }) = UnconstrainedStyle;
   const factory Style.width(double width) = WidthStyle;
 
   const factory Style.when({
@@ -86,6 +100,43 @@ class CenterStyle extends Style {
   @override
   Widget build(BuildContext context, bool enabled, Widget child) {
     return OptionalCenter(enabled: enabled, child: child);
+  }
+}
+
+class DirectionalityStyle extends Style {
+  const DirectionalityStyle(this.textDirection);
+
+  final TextDirection textDirection;
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return Directionality(
+      textDirection: enabled ? textDirection : Directionality.of(context),
+      child: child,
+    );
+  }
+}
+
+class FitStyle extends Style {
+  const FitStyle(
+    this.fit, {
+    this.alignment = Alignment.center,
+    this.clipBehavior = Clip.hardEdge,
+  });
+
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final Clip clipBehavior;
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return OptionalFittedBox(
+      enabled: enabled,
+      fit: fit,
+      alignment: alignment,
+      clipBehavior: clipBehavior,
+      child: child,
+    );
   }
 }
 
@@ -241,6 +292,17 @@ class ClipRRectStyle extends Style {
   }
 }
 
+class RotatedStyle extends Style {
+  const RotatedStyle({required this.quarterTurns});
+
+  final int quarterTurns;
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return RotatedBox(quarterTurns: enabled ? quarterTurns : 0, child: child);
+  }
+}
+
 class ShrinkStyle extends Style {
   const ShrinkStyle();
 
@@ -290,6 +352,40 @@ class TransformStyle extends Style {
       alignment: enabled ? alignment : null,
       transformHitTests: enabled ? transformHitTests : false,
       filterQuality: enabled ? filterQuality : null,
+      child: child,
+    );
+  }
+}
+
+class UnconstrainedStyle extends Style {
+  const UnconstrainedStyle({
+    this.textDirection,
+    this.alignment = Alignment.center,
+    this.constrainedAxis,
+    this.clipBehavior = Clip.none,
+  });
+
+  final TextDirection? textDirection;
+  final AlignmentGeometry alignment;
+  final Axis? constrainedAxis;
+  final Clip clipBehavior;
+
+  BoxConstraintsTransform _axisToTransform(Axis? constrainedAxis) {
+    return switch (constrainedAxis) {
+      Axis.horizontal => ConstraintsTransformBox.heightUnconstrained,
+      Axis.vertical => ConstraintsTransformBox.widthUnconstrained,
+      null => ConstraintsTransformBox.unconstrained,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context, bool enabled, Widget child) {
+    return OptionalConstraintsTransformBox(
+      enabled: enabled,
+      textDirection: textDirection,
+      alignment: alignment,
+      clipBehavior: clipBehavior,
+      constraintsTransform: _axisToTransform(constrainedAxis),
       child: child,
     );
   }

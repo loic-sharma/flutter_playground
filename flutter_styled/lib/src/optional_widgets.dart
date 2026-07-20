@@ -111,6 +111,40 @@ class OptionalAlign extends OptionallyWrappedChildWidget {
   }
 }
 
+class OptionalFittedBox extends OptionallyWrappedChildWidget {
+  const OptionalFittedBox({
+    super.key,
+    super.enabled,
+    this.fit = BoxFit.contain,
+    this.alignment = Alignment.center,
+    this.clipBehavior = Clip.hardEdge,
+    super.child,
+  });
+
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final Clip clipBehavior;
+
+  @override
+  RenderFittedBox createWrapperRenderBox(BuildContext context) {
+    return RenderFittedBox(
+      fit: fit,
+      alignment: alignment,
+      clipBehavior: clipBehavior,
+      textDirection: Directionality.maybeOf(context),
+    );
+  }
+
+  @override
+  void updateWrapperRenderBox(BuildContext context, RenderFittedBox renderObject) {
+    renderObject
+      ..fit = fit
+      ..alignment = alignment
+      ..clipBehavior = clipBehavior
+      ..textDirection = Directionality.maybeOf(context);
+  }
+}
+
 class OptionalOpacity extends StatelessWidget {
   const OptionalOpacity({
     super.key,
@@ -182,6 +216,46 @@ class OptionalClipRRect extends StatelessWidget {
       clipBehavior: enabled ? clipBehavior : Clip.none,
       child: child,
     );
+  }
+}
+
+class OptionalConstraintsTransformBox extends OptionallyWrappedChildWidget {
+  const OptionalConstraintsTransformBox({
+    super.key,
+    super.enabled,
+    super.child,
+    this.textDirection,
+    this.alignment = Alignment.center,
+    required this.constraintsTransform,
+    this.clipBehavior = Clip.none,
+    String debugTransformType = '',
+  });
+
+  final TextDirection? textDirection;
+
+  final AlignmentGeometry alignment;
+
+  final BoxConstraintsTransform constraintsTransform;
+
+  final Clip clipBehavior;
+
+  @override
+  RenderConstraintsTransformBox createWrapperRenderBox(BuildContext context) {
+    return RenderConstraintsTransformBox(
+      textDirection: textDirection ?? Directionality.maybeOf(context),
+      alignment: alignment,
+      constraintsTransform: constraintsTransform,
+      clipBehavior: clipBehavior,
+    );
+  }
+
+  @override
+  void updateWrapperRenderBox(BuildContext context, RenderConstraintsTransformBox renderObject) {
+    renderObject
+      ..textDirection = textDirection ?? Directionality.maybeOf(context)
+      ..constraintsTransform = constraintsTransform
+      ..alignment = alignment
+      ..clipBehavior = clipBehavior;
   }
 }
 

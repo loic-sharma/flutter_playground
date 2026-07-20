@@ -19,6 +19,7 @@ class HelloPage extends StatelessWidget {
             .textStyle(fontSize: 18),
           ]),
           .center(),
+          .unconstrained(),
         ],
         child: Text('Hello styled world!'),
       ),
