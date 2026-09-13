@@ -34,43 +34,77 @@ class Model extends ChangeNotifier {
     }
   }
 
-  String get direction => _increase ? 'increasing' : 'decreasing';
-
-  IconData get icon => _increase ? Icons.add : Icons.remove;
-
   void updateCount() {
     _counter += increase ? 1 : -1;
     notifyListeners();
   }
 }
 
-class MyScreen extends StatelessWidget {
+class MyScreen extends StatefulWidget {
+  @override
+  State<MyScreen> createState() => _MyScreenState();
+}
+
+class _MyScreenState extends State<MyScreen> {
+  late final ValueNotifier<int> counter;
+  late final ValueNotifier<bool> increase;
+
+  @override
+  void initState() {
+    super.initState();
+    counter = ValueNotifier(model.counter);
+    increase = ValueNotifier(model.increase);
+    model.addListener(_handleModelChanged);
+  }
+
+  void _handleModelChanged() {
+    counter.value = model.counter;
+    increase.value = model.increase;
+  }
+
+  @override
+  void dispose() {
+    model.removeListener(_handleModelChanged);
+    counter.dispose();
+    increase.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: model,
-      builder: (context, _) {
-        return Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Counter: ${model.counter}'),
-                SizedBox(height: 64),
-                Text('Direction: ${model.direction}'),
-                Switch(
-                  value: model.increase,
-                  onChanged: (value) => model.increase = value,
-                ),
-              ],
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ValueListenableBuilder<int>(
+              valueListenable: counter,
+              builder: (context, counter, _) => Text('Counter: $counter'),
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: model.updateCount,
-            child: Icon(model.icon),
-          ),
-        );
-      },
+            const SizedBox(height: 64),
+            ValueListenableBuilder<bool>(
+              valueListenable: increase,
+              builder: (context, increase, _) => Text('Direction: ${increase ? 'Increasing' : 'Decreasing'}'),
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: increase,
+              builder: (context, increaseValue, _) {
+                return Switch(
+                  value: increaseValue,
+                  onChanged: (value) => model.increase = value,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => model.updateCount(),
+        child: ValueListenableBuilder(
+          valueListenable: increase,
+          builder: (context, increaseValue, _) => Icon(increaseValue ? Icons.arrow_upward : Icons.arrow_downward),
+        ),
+      ),
     );
   }
 }
@@ -81,7 +115,6 @@ class MyScreen extends StatelessWidget {
 <td>
 
 ```dart
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:computed_listenable/computed_listenable.dart';
 
@@ -91,24 +124,22 @@ void main() {
 
 final model = Model();
 
-class Model {
-  ValueListenable<int> get counter => _counter;
-  final ValueNotifier<int> _counter = ValueNotifier<int>(0);
+class Model extends ChangeNotifier {
+  int get counter => _counter;
+  var _counter = 0;
 
-  final ValueNotifier<bool> increase = ValueNotifier<bool>(true);
-
-  ValueListenable<String> get direction => _direction;
-  late final _direction = ComputedListenable<String>((context) {
-    return context.watch<bool>(increase) ? 'increasing' : 'decreasing';
-  });
-
-  ValueListenable<IconData> get icon => _icon;
-  late final _icon = ComputedListenable<IconData>((context) {
-    return context.watch<bool>(increase) ? Icons.add : Icons.remove;
-  });
+  bool get increase => _increase;
+  var _increase = true;
+  set increase(bool value) {
+    if (_increase != value) {
+      _increase = value;
+      notifyListeners();
+    }
+  }
 
   void updateCount() {
-    _counter.value += increase.value ? 1 : -1;
+    _counter += increase ? 1 : -1;
+    notifyListeners();
   }
 }
 
@@ -120,19 +151,33 @@ class MyScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Counter: ${context.watch(model.counter)}'),
-            SizedBox(height: 64),
-            Text('Direction: ${context.watch(model.direction)}'),
-            Switch(
-              value: context.watch(model.increase),
-              onChanged: (value) => model.increase.value = value,
+            ComputedBuilder(
+              computed: (context) => context.listen(model).counter,
+              builder: (context, counter, _) => Text('Counter: $counter'),
+            ),
+            const SizedBox(height: 64),
+            ComputedBuilder(
+              computed: (context) => context.listen(model).increase ? 'Increasing' : 'Decreasing',
+              builder: (context, increase, _) => Text('Direction: $increase'),
+            ),
+            ComputedBuilder(
+              computed: (context) => context.listen(model).increase,
+              builder: (context, increaseValue, _) {
+                return Switch(
+                  value: increaseValue,
+                  onChanged: (value) => model.increase = value,
+                );
+              },
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: model.updateCount,
-        child: Icon(context.watch(model.icon)),
+        onPressed: () => model.updateCount(),
+        child: ComputedBuilder(
+          computed: (context) => context.listen(model).increase ? Icons.arrow_upward : Icons.arrow_downward,
+          builder: (context, icon, _) => Icon(icon),
+        ),
       ),
     );
   }

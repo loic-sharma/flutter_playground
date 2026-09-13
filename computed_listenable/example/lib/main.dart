@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:computed_listenable/computed_listenable.dart';
 
@@ -8,35 +7,22 @@ void main() {
 
 final model = Model();
 
-class Model {
-  ValueListenable<int> get counter => _counter;
-  final ValueNotifier<int> _counter = ValueNotifier<int>(0);
+class Model extends ChangeNotifier {
+  int get counter => _counter;
+  var _counter = 0;
 
-  final ValueNotifier<bool> increase = ValueNotifier<bool>(true);
-
-  ValueListenable<String> get direction => _direction;
-  late final _direction = ComputedListenable<String>((context) {
-    return context.watch<bool>(increase) ? 'increasing' : 'decreasing';
-  });
-
-  ValueListenable<IconData> get icon => _icon;
-  late final _icon = ComputedListenable<IconData>((context) {
-    return context.watch<bool>(increase) ? Icons.add : Icons.remove;
-  });
-
-  void updateCount() {
-    if (increase.value) {
-      _counter.value++;
-    } else {
-      _counter.value--;
+  bool get increase => _increase;
+  var _increase = true;
+  set increase(bool value) {
+    if (_increase != value) {
+      _increase = value;
+      notifyListeners();
     }
   }
 
-  void dispose() {
-    _counter.dispose();
-    increase.dispose();
-    _direction.dispose();
-    _icon.dispose();
+  void updateCount() {
+    _counter += increase ? 1 : -1;
+    notifyListeners();
   }
 }
 
@@ -48,36 +34,32 @@ class MyScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ValueListenableBuilder(
-              valueListenable: model.counter,
-              builder: (context, value, child) {
-                return Text('Counter: $value');
-              },
-            ),
-            SizedBox(height: 64),
             ComputedBuilder(
-              computed: (context) => context.watch(model.increase) ? 'increasing' : 'decreasing',
-              builder: (context, value, child) {
-                return Text('Direction: $value');
-              },
+              computed: (context) => context.listen(model).counter,
+              builder: (context, counter, _) => Text('Counter: $counter'),
             ),
-            ValueListenableBuilder(
-              valueListenable: model.increase,
-              builder: (context, value, child) => Switch(
-                value: model.increase.value,
-                onChanged: (value) => model.increase.value = value,
-              ),
+            const SizedBox(height: 64),
+            ComputedBuilder(
+              computed: (context) => context.listen(model).increase ? 'Increasing' : 'Decreasing',
+              builder: (context, increase, _) => Text('Direction: $increase'),
+            ),
+            ComputedBuilder(
+              computed: (context) => context.listen(model).increase,
+              builder: (context, increaseValue, _) {
+                return Switch(
+                  value: increaseValue,
+                  onChanged: (value) => model.increase = value,
+                );
+              },
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: model.updateCount,
-        child: ValueListenableBuilder(
-          valueListenable: model.icon,
-          builder: (context, value, child) {
-            return Icon(value);
-          },
+        onPressed: () => model.updateCount(),
+        child: ComputedBuilder(
+          computed: (context) => context.listen(model).increase ? Icons.arrow_upward : Icons.arrow_downward,
+          builder: (context, icon, _) => Icon(icon),
         ),
       ),
     );
