@@ -5,71 +5,27 @@ void main() {
   runApp(MaterialApp(home: MyScreen()));
 }
 
-final model = Model();
-
-class Model extends ChangeNotifier {
-  int get counter => _counter;
-  var _counter = 0;
-
-  bool get increase => _increase;
-  var _increase = true;
-  set increase(bool value) {
-    if (_increase != value) {
-      _increase = value;
-      notifyListeners();
-    }
-  }
-
-  void updateCount() {
-    _counter += increase ? 1 : -1;
-    notifyListeners();
-  }
-}
+final counter = ValueNotifier(0);
 
 class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ComputedBuilder(
-              computed: (context) => context.listen(model).counter,
-              builder: (context, counter, _) {
-                return Text('Counter: $counter');
-              },
-            ),
-            const SizedBox(height: 64),
-            ComputedBuilder(
-              computed: (context) => context.listen(model).increase,
-              builder: (context, increase, _) {
-                var direction = increase ? 'Increasing' : 'Decreasing';
-                return Text('Direction: $direction');
-              },
-            ),
-            ComputedBuilder(
-              computed: (context) => context.listen(model).increase,
-              builder: (context, increaseValue, _) {
-                return Switch(
-                  value: increaseValue,
-                  onChanged: (value) => model.increase = value,
-                );
-              },
-            ),
-          ],
-        ),
+      body: Column(
+        children: [
+          ValueListenableBuilder(
+            valueListenable: counter,
+            builder: (context, value, _) => Text('Count: $value'),
+          ),
+          ComputedBuilder(
+            computed: (context) => context.watch(counter) % 2 == 0,
+            builder: (context, isEven, _) => Text('Is even: $isEven'),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => model.updateCount(),
-        child: ComputedBuilder(
-          computed: (context) => context.listen(model).increase,
-          builder: (context, increase, _) {
-            return Icon(
-              increase ? Icons.arrow_upward : Icons.arrow_downward,
-            );
-          },
-        ),
+        onPressed: () => counter.value++,
+        child: Icon(Icons.add),
       ),
     );
   }
