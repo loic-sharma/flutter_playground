@@ -55,8 +55,8 @@ class MyScreen extends StatelessWidget {
               },
             ),
             SizedBox(height: 64),
-            ValueListenableBuilder(
-              valueListenable: model.direction,
+            ComputedBuilder(
+              computed: (context) => context.watch(model.increase) ? 'increasing' : 'decreasing',
               builder: (context, value, child) {
                 return Text('Direction: $value');
               },
