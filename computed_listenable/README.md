@@ -79,12 +79,17 @@ class _MyScreenState extends State<MyScreen> {
           children: [
             ValueListenableBuilder<int>(
               valueListenable: counter,
-              builder: (context, counter, _) => Text('Counter: $counter'),
+              builder: (context, counter, _) {
+                return Text('Counter: $counter');
+              },
             ),
             const SizedBox(height: 64),
             ValueListenableBuilder<bool>(
               valueListenable: increase,
-              builder: (context, increase, _) => Text('Direction: ${increase ? 'Increasing' : 'Decreasing'}'),
+              builder: (context, increase, _) {
+                var direction = increase ? 'Increasing' : 'Decreasing';
+                return Text('Direction: $direction');
+              },
             ),
             ValueListenableBuilder<bool>(
               valueListenable: increase,
@@ -102,7 +107,11 @@ class _MyScreenState extends State<MyScreen> {
         onPressed: () => model.updateCount(),
         child: ValueListenableBuilder(
           valueListenable: increase,
-          builder: (context, increaseValue, _) => Icon(increaseValue ? Icons.arrow_upward : Icons.arrow_downward),
+          builder: (context, increase, _) {
+            return Icon(
+              increase ? Icons.arrow_upward : Icons.arrow_downward,
+            );
+          },
         ),
       ),
     );
@@ -153,12 +162,17 @@ class MyScreen extends StatelessWidget {
           children: [
             ComputedBuilder(
               computed: (context) => context.listen(model).counter,
-              builder: (context, counter, _) => Text('Counter: $counter'),
+              builder: (context, counter, _) {
+                return Text('Counter: $counter');
+              },
             ),
             const SizedBox(height: 64),
             ComputedBuilder(
-              computed: (context) => context.listen(model).increase ? 'Increasing' : 'Decreasing',
-              builder: (context, increase, _) => Text('Direction: $increase'),
+              computed: (context) => context.listen(model).increase,
+              builder: (context, increase, _) {
+                var direction = increase ? 'Increasing' : 'Decreasing';
+                return Text('Direction: $direction');
+              },
             ),
             ComputedBuilder(
               computed: (context) => context.listen(model).increase,
@@ -175,8 +189,12 @@ class MyScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () => model.updateCount(),
         child: ComputedBuilder(
-          computed: (context) => context.listen(model).increase ? Icons.arrow_upward : Icons.arrow_downward,
-          builder: (context, icon, _) => Icon(icon),
+          computed: (context) => context.listen(model).increase,
+          builder: (context, increase, _) {
+            return Icon(
+              increase ? Icons.arrow_upward : Icons.arrow_downward,
+            );
+          },
         ),
       ),
     );

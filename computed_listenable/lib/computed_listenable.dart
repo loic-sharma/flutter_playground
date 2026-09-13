@@ -1,16 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-typedef ComputeCallback<T> = T Function(SignalContext context);
+typedef ComputeCallback<T> = T Function(ListenableContext context);
 
-abstract interface class SignalContext {
+abstract interface class ListenableContext {
   /// Registers this context to listen to the given [Listenable] until the next rebuild.
   ///
   /// This context will rebuild if the [Listenable] notifies its listeners.
   ///
   /// If the next rebuild does not call this method again with the same [Listenable],
   /// this context will stop listening to the [Listenable].
-  void listen(Listenable listenable);
+  ///
+  /// This method returns the listenable that was passed in for convenience.
+  T listen<T extends Listenable>(T listenable);
 
   /// Registers this context to watch the given [ValueListenable] until the next rebuild.
   ///
@@ -31,24 +33,18 @@ class ComputedListenable<T> implements ValueListenable<T> {
   T get value => _inner.value;
 
   @override
-  void addListener(VoidCallback listener) {
-    _inner.addListener(listener);
-  }
+  void addListener(VoidCallback listener) => _inner.addListener(listener);
 
   @override
-  void removeListener(VoidCallback listener) {
-    _inner.removeListener(listener);
-  }
+  void removeListener(VoidCallback listener) => _inner.removeListener(listener);
 
-  void dispose() {
-    _inner.dispose();
-  }
+  void dispose() => _inner.dispose();
 
   @override
   String toString() => '${describeIdentity(this)}($value)';
 }
 
-class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
+class _ComputedListenable<T> extends ChangeNotifier implements ListenableContext {
   _ComputedListenable(this._compute) {
     _build();
   }
@@ -60,11 +56,11 @@ class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
 
   /// The listenables that were listened to during the last build.
   ///
-  /// This is null if has not been built yet, or if no
-  /// listenables were listened to during the last build.
+  /// The computed value will rebuild if any of these listenables are notified.
+  /// This is null if no listenables were listened to during the last build.
   List<Listenable>? _listenables;
 
-  /// New listenables added during the current build.
+  /// The current build's listenables if they have changed since the last build.
   ///
   /// This is null outside of a build, or if the current build has not changed
   /// listenables yet.
@@ -72,8 +68,11 @@ class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
 
   /// During a build, the index of the last unchanged listenable in [_listenables].
   ///
-  /// This is used to optimize the case where the listenables do not change between builds.
-  /// This value is 0 outside of a build, and is reset to 0 at the start of each build.
+  /// This is used to optimize the case where the listenables do not change between
+  /// builds. This index is incremented when a listenable is listened to that is the
+  /// same as the listenable at this index in [_listenables].
+  ///
+  /// This value is 0 outside of a build.
   int _unchangedListenables = 0;
 
   T get value {
@@ -95,7 +94,7 @@ class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
   }
 
   @override
-  void listen(Listenable listenable) {
+  TListenable listen<TListenable extends Listenable>(TListenable listenable) {
     ChangeNotifier.debugAssertNotDisposed(this);
     _debugAssertIsBuilding('listen');
 
@@ -105,7 +104,7 @@ class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
         _unchangedListenables < _listenables!.length &&
         identical(_listenables!.elementAt(_unchangedListenables), listenable)) {
       _unchangedListenables += 1;
-      return;
+      return listenable;
     }
 
     // Handle new listenable.
@@ -117,14 +116,14 @@ class _ComputedListenable<T> extends ChangeNotifier implements SignalContext {
     }
 
     _newListenables!.add(listenable);
+    return listenable;
   }
 
   @override
   ValueType watch<ValueType>(ValueListenable<ValueType> valueListenable) {
     ChangeNotifier.debugAssertNotDisposed(this);
     _debugAssertIsBuilding('watch');
-    listen(valueListenable);
-    return valueListenable.value;
+    return listen(valueListenable).value;
   }
 
   void _build() {
