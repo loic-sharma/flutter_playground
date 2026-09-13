@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-typedef ComputeCallback<T> = T Function(ListenableContext context);
+typedef ComputeCallback<T> = T Function(WatchContext context);
 
-abstract interface class ListenableContext {
+abstract interface class WatchContext {
   /// Registers this context to listen to the given [Listenable] until the next rebuild.
   ///
   /// This context will rebuild if the [Listenable] notifies its listeners.
@@ -12,7 +12,7 @@ abstract interface class ListenableContext {
   /// this context will stop listening to the [Listenable].
   ///
   /// This method returns the listenable that was passed in for convenience.
-  T listen<T extends Listenable>(T listenable);
+  T listenable<T extends Listenable>(T listenable);
 
   /// Registers this context to watch the given [ValueListenable] until the next rebuild.
   ///
@@ -20,7 +20,7 @@ abstract interface class ListenableContext {
   ///
   /// If the next rebuild does not call this method again with the same [ValueListenable],
   /// this context will stop listening to the [ValueListenable].
-  T watch<T>(ValueListenable<T> listenable);
+  T value<T>(ValueListenable<T> listenable);
 }
 
 class ComputedListenable<T> implements ValueListenable<T> {
@@ -30,7 +30,7 @@ class ComputedListenable<T> implements ValueListenable<T> {
   final _ComputedListenable<T> _inner;
 
   @override
-  T get value => _inner.value;
+  T get value => _inner.computedValue;
 
   @override
   void addListener(VoidCallback listener) => _inner.addListener(listener);
@@ -44,7 +44,7 @@ class ComputedListenable<T> implements ValueListenable<T> {
   String toString() => '${describeIdentity(this)}($value)';
 }
 
-class _ComputedListenable<T> extends ChangeNotifier implements ListenableContext {
+class _ComputedListenable<T> extends ChangeNotifier implements WatchContext {
   _ComputedListenable(this._compute) {
     _build();
   }
@@ -75,7 +75,7 @@ class _ComputedListenable<T> extends ChangeNotifier implements ListenableContext
   /// This value is 0 outside of a build.
   int _unchangedListenables = 0;
 
-  T get value {
+  T get computedValue {
     ChangeNotifier.debugAssertNotDisposed(this);
     return _value as T;
   }
@@ -94,9 +94,9 @@ class _ComputedListenable<T> extends ChangeNotifier implements ListenableContext
   }
 
   @override
-  TListenable listen<TListenable extends Listenable>(TListenable listenable) {
+  TListenable listenable<TListenable extends Listenable>(TListenable listenable) {
     ChangeNotifier.debugAssertNotDisposed(this);
-    _debugAssertIsBuilding('listen');
+    _debugAssertIsBuilding('listenable');
 
     // Handle unchanged listenable.
     if (_listenables != null &&
@@ -120,10 +120,10 @@ class _ComputedListenable<T> extends ChangeNotifier implements ListenableContext
   }
 
   @override
-  ValueType watch<ValueType>(ValueListenable<ValueType> valueListenable) {
+  ValueType valueListenable<ValueType>(ValueListenable<ValueType> valueListenable) {
     ChangeNotifier.debugAssertNotDisposed(this);
-    _debugAssertIsBuilding('watch');
-    return listen(valueListenable).value;
+    _debugAssertIsBuilding('valueListenable');
+    return listenable(valueListenable).value;
   }
 
   void _build() {

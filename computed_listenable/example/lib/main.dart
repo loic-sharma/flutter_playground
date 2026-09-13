@@ -18,7 +18,7 @@ class MyScreen extends StatelessWidget {
             builder: (context, value, _) => Text('Count: $value'),
           ),
           ComputedBuilder(
-            computed: (context) => context.watch(counter) % 2 == 0,
+            computed: (watch) => watch.value(counter) % 2 == 0,
             builder: (context, isEven, _) => Text('Is even: $isEven'),
           ),
         ],
